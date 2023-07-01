@@ -1,0 +1,134 @@
+@font-face {
+	font-family: YOUSHEBIAOTIHEI;
+	src: url('../fonts//YOUSHEBIAOTIHEI.TTF');
+	font-style: normal;
+}
+// @font-face {
+// 	font-family: '微软雅黑';
+// 	src: url('../fonts/微软雅黑.ttf');
+// 	font-style: normal;
+// }
+@font-face {
+	font-family: SimSun;
+	src: url('../fonts/simsun.ttf');
+	font-style: normal;
+}
+
+html,
+body {
+	font-family: '微软雅黑';
+	height: 100%;
+	width: 100%;
+}
+body {
+	font-size: $normal;
+	font-weight: 300;
+}
+
+.el-message-box__title {
+	justify-content: left !important;
+}
+.el-message-box__status {
+	color: #0090ff !important;
+}
+.el-message-box__btns {
+	text-align: center;
+	display: flex;
+	justify-content: right;
+	flex-flow: row-reverse;
+
+	.btn-custom-cancel {
+		margin-left: 0.1rem;
+	}
+}
+.el-message-box__btns button:nth-child(2) {
+	margin-right: 0.1rem;
+}
+.el-message-box__message {
+	text-align: left;
+}
+a {
+	text-decoration: none;
+	color: #0090ff;
+}
+
+.font-SimSun {
+	font-family: SimSun;
+}
+.font-YOUSHEBIAOTIHEI {
+	font-family: YOUSHEBIAOTIHEI;
+}
+.font-FZCHSJW {
+	font-family: FZCHSJW;
+}
+
+@font-face {
+	font-family: FZCHSJW;
+	src: url('../../assets/fonts/FZCHSJW.TTF');
+	font-style: normal;
+}
+
+.btn1 {
+	background-color: #0090ff;
+	font-weight: 400;
+	border-radius: 0.08rem;
+	padding: 0.07rem 0.2rem;
+}
+.btn2 {
+	background-color: transparent;
+	font-weight: 400;
+	border-radius: 0.08rem;
+	padding: 0.07rem 0.2rem;
+	color: #0090ff;
+	border: 1px solid #0090ff;
+}
+.font-w-400 {
+	font-weight: 400 !important;
+}
+
+// messageBox
+.el-message-box {
+	.el-button {
+		border-radius: 0.08rem;
+	}
+	.el-message-box__btns button:nth-child(2) {
+		border-radius: 0.08rem;
+	}
+
+	.el-message-box__btns button:nth-child(1) {
+		border-radius: 0.08rem;
+	}
+}
+
+//el-cascader
+.el-cascader {
+	.el-input--mini .el-input__inner {
+		height: 0.32rem;
+		line-height: 0.32rem;
+	}
+}
+.font-s-14 {
+	font-size: 0.14rem;
+}
+
+::-webkit-scrollbar {
+	width: 0.08rem;
+	height: 0.08rem;
+	background-color: rgb(240, 239, 239);
+	// background-color: red;
+}
+::-webkit-scrollbar-thumb {
+	background: linear-gradient(180deg, #0090ff 0%, #5abbd1 50%, #aacbd2 100%);
+	// width: 0.08rem;
+	//background: #0090ff;
+}
+.ellipsis{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.limitTxt{
+	box-sizing: border-box;
+	padding-right: 1.2rem;
+}

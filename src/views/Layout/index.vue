@@ -71,11 +71,11 @@ export default {
   width: 100vw;
   height: 100vh;
   .top {
-    height: 40px;
+    height: 60px;
     background-color: #e1e3e6;
   }
   .main {
-    height: calc(100vh - 40px);
+    height: calc(100vh - 60px);
     display: flex;
     width: 100%;
     background-color: #fff;

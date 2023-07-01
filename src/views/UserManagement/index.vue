@@ -3,123 +3,311 @@
     <div class="header">
       <div class="header-left">
         <el-button-group>
-          <el-button type="primary" icon="el-icon-bottom" size="mini"
+          <el-button type="primary" icon="el-icon-bottom" size="small" disabled
             >Import</el-button
           >
           <el-button
             type="primary"
             icon="el-icon-circle-plus-outline"
-            size="mini"
+            size="small"
+            @click="toAdd"
             >Add</el-button
           >
-          <el-button type="primary" icon="el-icon-delete" size="mini"
+          <el-button
+            type="primary"
+            icon="el-icon-delete"
+            size="small"
+            @click="handleDelete"
             >Delete</el-button
           >
         </el-button-group>
       </div>
       <div class="header-right">
-        <el-button type="primary" size="mini" icon="el-icon-top"
+        <el-button type="primary" size="small" icon="el-icon-top" disabled
           >Export</el-button
         >
       </div>
     </div>
     <div class="search">
-      <el-form :inline="true">
-        <el-form-item label="User Name" prop="userName">
-          <el-input v-model="userName" size="mini" suffix-icon="el-icon-search">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="Full Name" prop="fullName">
-          <el-input v-model="fullName" size="mini" suffix-icon="el-icon-search">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="Type" prop="type">
-          <el-select v-model="type" filterable size="mini">
-            <el-option
-              v-for="item in typeOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="Authority" prop="authority">
-          <el-select v-model="authority" filterable size="mini">
-            <el-option
-              v-for="item in authorityOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
+      <div class="search-unit">
+        <div class="search-title">User Name</div>
+        <el-input
+          v-model="userName"
+          size="small"
+          suffix-icon="el-icon-search"
+          class="search-item"
+          clearable
+          @input="handleQuery"
+        >
+        </el-input>
+      </div>
+      <div class="search-unit">
+        <div class="search-title">Full Name</div>
+        <el-input
+          v-model="fullName"
+          size="small"
+          suffix-icon="el-icon-search"
+          class="search-item"
+          clearable
+          @input="handleQuery"
+        >
+        </el-input>
+      </div>
+
+      <div class="search-unit">
+        <div class="search-title">Type</div>
+        <el-select
+          v-model="type"
+          filterable
+          size="small"
+          class="search-item"
+          clearable
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="item in typeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
+      <div class="search-unit">
+        <div class="search-title">Authority</div>
+        <el-select
+          v-model="authority"
+          filterable
+          size="small"
+          class="search-item"
+          clearable
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="item in authorityOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </div>
     </div>
-    <!-- <div class="search-right">
-        <el-button type="primary" size="mini">Search</el-button>
-      </div> -->
-    <!-- </div> -->
     <div class="table">
-      <el-table :data="tableData" border stripe style="width: 100%">
-        <el-table-column prop="date" label="日期" width="180">
+      <el-table
+        v-loading="loading"
+        :header-cell-style="{
+          'background-color': '#f3f3f3',
+        }"
+        :data="tableData"
+        style="width: 100%"
+        ref="tableData"
+        row-key="userId"
+        @selection-change="getCheckBoxList"
+        stripe
+      >
+        <el-table-column
+          type="selection"
+          min-width="2%"
+          :reserve-selection="true"
+        ></el-table-column>
+        <el-table-column
+          type="index"
+          min-width="2%"
+          width="80"
+          label="SN"
+          align="center"
+          :index="indexMethod"
+        >
         </el-table-column>
-        <el-table-column prop="name" label="姓名" width="180">
+        <el-table-column
+          prop="userName"
+          label="User Name"
+          min-width="8%"
+          align="center"
+          show-overflow-tooltip
+        >
         </el-table-column>
-        <el-table-column prop="address" label="地址"> </el-table-column>
+        <el-table-column
+          prop="password"
+          label="Password"
+          min-width="8%"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.password">
+              {{ scope.row.password }}
+            </span>
+            <span v-else> / </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="fullName"
+          label="Full Name"
+          align="left"
+          min-width="10%"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="scope">
+            <span @click="() => taskDetail(scope.row)" class="task_name">
+              {{ scope.row.taskName }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="sex"
+          label="Gender"
+          min-width="8%"
+          align="center"
+          show-overflow-tooltip
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.sex == 0">female</span>
+            <span v-if="scope.row.sex == 1">male</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="authority"
+          label="Authority"
+          min-width="8%"
+          align="center"
+          show-overflow-tooltip
+        >
+          <!-- <template slot-scope="scope">
+            <span v-if="scope.row.authority == 0">female</span>
+            <span v-if="scope.row.authority == 1">male</span>
+          </template> -->
+        </el-table-column>
+        <el-table-column
+          prop="userType"
+          sortable="custom"
+          label="User Type"
+          align="center"
+          min-width="10%"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.userType == 1">systerm user</span>
+            <span v-if="scope.row.userType == 2">equiment user</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="position"
+          label="Positon"
+          align="center"
+          min-width="10%"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.position">
+              {{ scope.row.position }}
+            </span>
+            <span v-else> / </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="jurisdiction"
+          label="Jurisdiction"
+          min-width="8%"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.jurisdiction">
+              {{ scope.row.jurisdiction }}
+            </span>
+            <span v-else> / </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="digitalCertificate"
+          label="Digital Certificate"
+          min-width="10%"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="scope">
+            <span v-if="scope.row.digitalCertificate">
+              {{ scope.row.digitalCertificate }}
+            </span>
+            <span v-else> / </span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          label="Status"
+          prop="status"
+          align="center"
+          :show-overflow-tooltip="true"
+          min-width="5%"
+        >
+          <template slot-scope="scope">
+            <span
+              v-if="scope.row.status == 1"
+              class="status-lock"
+              @click="changeStatus(scope.row)"
+              ><i class="el-icon-lock"></i>
+            </span>
+            <span v-else @click="changeStatus(scope.row)" class="status-unlock"
+              ><i class="el-icon-unlock"></i>
+            </span>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <div class="page">
-      <el-pagination
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="currentPage"
-        :page-sizes="[10, 20, 30, 40]"
-        :page-size="10"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="listTotal"
-      >
-      </el-pagination>
+      <!-- <Pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="pageNum"
+        :limit.sync="pageSize"
+        @pagination="getUserList"
+      ></Pagination> -->
+      <Pagination
+        :total="total"
+        :page.sync="pageNum"
+        :limit.sync="pageSize"
+        @pagination="getUserList"
+      ></Pagination>
     </div>
   </div>
 </template>
 
 <script>
-// import Request from "@/common/net/request.js";
-// import Tab from "@/components/Tab/tabIncome.vue";
-// const request = new Request();
+import { getUserList, changeStatus } from "@/api/user";
+import Pagination from "../../components/Pagination.vue";
+
 export default {
+  components: { Pagination },
   //   components: {
   //     //导入的组件
   //     Tab,
   //   },
   data() {
     return {
-      tableData: [
+      userName: "",
+      fullName: "",
+      type: "",
+      typeOptions: [
+        { label: "all", value: "" },
         {
-          date: "2016-05-02",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1518 弄",
+          label: "System User",
+          value: 1,
         },
         {
-          date: "2016-05-04",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1517 弄",
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1519 弄",
-        },
-        {
-          date: "2016-05-03",
-          name: "王小虎",
-          address: "上海市普陀区金沙江路 1516 弄",
+          label: "Equipment User",
+          value: 2,
         },
       ],
-      listTotal: 100,
-      currentPage: 4,
+      authority: "",
+      authorityOptions: [{ label: "all", value: "" }],
+      tableData: [],
+      loading: false,
+      checkBoxList: [],
+      // 总条数
+      total: 100,
+      pageNum: 1,
+      pageSize: 10,
+      timer: null,
     };
   },
   //   computed: {
@@ -142,15 +330,81 @@ export default {
   //     },
   //   },
   methods: {
-    getTableYear() {},
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+    getUserList() {
+      this.loading = true;
+      getUserList().then((res) => {
+        if (res.code == 200) {
+          console.log("res.rows", res.rows);
+          this.tableData = res.rows;
+          this.total = res.rows.lenght;
+          this.loading = false;
+        }
+      });
     },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+    /** 搜索按钮操作 */
+    handleQuery() {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.pageNum = 1;
+        this.getUserList();
+      }, 300);
+    },
+    // handleSizeChange(val) {
+    //   console.log(`每页 ${val} 条`);
+    // },
+    // handleCurrentChange(val) {
+    //   console.log(`当前页: ${val}`);
+    // },
+    toAdd() {
+      this.$router.push({ path: "/SystemAdministration/User" });
+    },
+    //获取选中的数据
+    getCheckBoxList(val) {
+      console.log(val);
+      console.log("_____________________________");
+      this.checkBoxList = val;
+    },
+    //多选框的处理
+    selectable(row, index) {
+      if (row.status == 0) return false;
+      //禁用
+      else return true; //可选
+    },
+    //表格连续序号
+    indexMethod(index) {
+      let curpage = this.pageNum; //单前页码，具体看组件取值
+      let limitpage = this.pageSize; //每页条数，具体是组件取值
+      return index + 1 + (curpage - 1) * limitpage;
+    },
+    changeStatus(row) {
+      console.log("row", row);
+      let data = {
+        userId: row.userId,
+        status: row.status == 0 ? 1 : 0,
+      };
+      changeStatus(data).then((res) => {
+        console.log("res", res);
+        if (res.code == 200) this.getUserList();
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete() {
+      console.log("this.checkBoxList", this.checkBoxList);
+      // const jobIds = row.jobId || this.ids;
+      this.$modal.confirm(`Are you sure you want to delete?`);
+      // .then(function () {
+      //   return delJob(jobIds);
+      // })
+      // .then(() => {
+      //   this.getList();
+      //   this.$modal.msgSuccess("删除成功");
+      // })
+      // .catch(() => {});
     },
   },
-  created() {},
+  created() {
+    this.getUserList();
+  },
   mounted() {
     this.$nextTick(function () {
       // Code that will run only after the entire view has been rendered
@@ -160,13 +414,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-* {
-  box-sizing: border-box;
-}
+// * {
+//   box-sizing: border-box;
+// }
 .user-list {
+  height: 100%;
+  width: 100%;
+  padding-bottom: 20px;
   .header {
     background-color: #d4d4d7;
-    height: 40px;
+    height: 60px;
     width: 100%;
     display: flex;
     justify-content: space-between;
@@ -179,30 +436,41 @@ export default {
     }
   }
   .search {
-    // height: 40px;
     width: 100%;
+    height: 60px;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding: 0 10px;
-    // .search-left {
-    //   display: flex;
-    //   justify-content: flex-start;
-    //   align-items: center;
-    //   .search-item {
-
-    //     margin-right: 10px;
-    //     div {
-    //       display: inline;
-    //     }
-    //     .search-label {
-    //       width: 100px;
-    //     }
-    //   }
-    // }
+    .search-unit {
+      margin-right: 40px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      .search-title {
+        margin-right: 5px;
+        // width: 100px;
+      }
+      .search-item {
+        width: 200px;
+      }
+    }
   }
   .table {
     padding: 0 10px;
+    height: calc(100% - 120px - 32px);
+    overflow: auto;
+    .status-lock {
+      color: #ae3d2e;
+      cursor: pointer;
+    }
+    .status-unlock {
+      color: #5a9cf8;
+      cursor: pointer;
+    }
+  }
+  .page {
+    height: 32px;
   }
 }
 </style>

@@ -11,6 +11,9 @@
     "core-js": "^3.6.5",
     "echarts": "^5.4.2",
     "element-ui": "^2.4.5",
+    "file-saver": "^2.0.5",
+    "js-cookie": "^3.0.5",
+    "jsencrypt": "^3.3.2",
     "normalize.css": "^8.0.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
@@ -26,6 +29,8 @@
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "vue-cli-plugin-element": "~1.0.1",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "compression-webpack-plugin": "5.0.2",
+    "add-asset-html-webpack-plugin": "^5.0.2"
   }
 }

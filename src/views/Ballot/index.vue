@@ -1,5 +1,5 @@
 <template>
-  <div class="test">开发中。。。</div>
+  <div class="test">Ballot 开发中。。。</div>
 </template>
 
 <script>

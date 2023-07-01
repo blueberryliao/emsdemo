@@ -235,7 +235,7 @@ let MenuList = [
     menuLevel: 1,
     limit: ["Help"],
     index: "8",
-    isDeveloped: true,
+    isDeveloped: false,
     children: [
       {
         path: "/Help/UserManual",

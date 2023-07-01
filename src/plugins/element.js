@@ -79,12 +79,18 @@ import {
   Notification,
 } from "element-ui";
 // import "element-ui/lib/theme-chalk/index.css";
-import locale from "element-ui/lib/locale/lang/en"; // element-ui, {locale}
+import lang from "element-ui/lib/locale/lang/en";
+import locale from "element-ui/lib/locale"; // element-ui, {locale}
+// 设置语言
+locale.use(lang);
+// 引入组件
+Vue.component(Pagination.name, Pagination);
+Vue.component(Dialog.name, Dialog);
 
-Vue.use(Pagination, { locale });
-Vue.use(Dialog, { locale });
-Vue.use(Autocomplete, { locale });
-Vue.use(Dropdown, { locale });
+// Vue.use(Pagination);
+// Vue.use(Dialog);
+Vue.use(Autocomplete);
+Vue.use(Dropdown);
 Vue.use(DropdownMenu);
 Vue.use(DropdownItem);
 Vue.use(Menu);

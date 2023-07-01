@@ -1,78 +1,204 @@
 <template>
   <div class="login">
     <div class="top">
-      <img src="../../assets/img/logo.jpeg" alt="" />
+      <img src="@/assets/img/loginlogo.jpg" alt="" />
     </div>
     <div class="title">
       <div class="line1">Welcome to</div>
-      <div class="line1">ELECTION MANAGEMENT SYSTEM</div>
+      <div class="line2">ELECTION MANAGEMENT SYSTEM</div>
     </div>
     <div class="main">
       <div class="pic">
-        <img src="../../assets/img/login.png" alt="" />
+        <img src="@/assets/img/login.png" alt="" />
       </div>
       <div class="login-case">
-        <form class="box">
-          <!-- <h1>Login</h1> -->
-          <input type="text" name="usern" placeholder="Username" />
-          <input type="password" name="psw" placeholder="Password" />
-          <input type="submit" value="login" />
-        </form>
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          :rules="loginRules"
+          class="login-form"
+        >
+          <el-form-item prop="username">
+            <el-input
+              v-model="loginForm.username"
+              type="text"
+              auto-complete="off"
+              placeholder="username"
+              prefix-icon="el-icon-s-custom"
+            >
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model="loginForm.password"
+              type="password"
+              auto-complete="off"
+              placeholder="password"
+              @keyup.enter.native="handleLogin"
+              prefix-icon="el-icon-lock"
+            >
+            </el-input>
+          </el-form-item>
+          <el-checkbox
+            v-model="loginForm.rememberMe"
+            style="margin: 0px 0px 25px 0px"
+            >Remember me</el-checkbox
+          >
+          <el-form-item style="width: 100%">
+            <el-button
+              :loading="loading"
+              size="medium"
+              type="primary"
+              style="width: 100%"
+              @click.native.prevent="handleLogin"
+            >
+              <span v-if="!loading">Login</span>
+              <span v-else>loading</span>
+            </el-button>
+
+            <!-- <div style="float: right" v-if="register">
+              <router-link class="link-type" :to="'/register'"
+                >立即注册</router-link
+              >
+            </div> -->
+            <div style="float: right" v-if="register">
+              <router-link class="link-type" :to="'/'"
+                >Forgot password?</router-link
+              >
+            </div>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
+    <!--  底部  -->
+    <!-- <div class="el-login-footer">
+      <span>Copyright All Rights Reserved.</span>
+    </div> -->
   </div>
 </template>
 
 <script>
-// import Request from "@/common/net/request.js";
-// import Tab from "@/components/Tab/tabIncome.vue";
-// const request = new Request();
+import Cookies from "js-cookie";
+import { encrypt, decrypt } from "@/utils/jsencrypt";
+import { login } from "@/api/login";
 export default {
-  //   components: {
-  //     //导入的组件
-  //     Tab,
-  //   },
+  name: "Login",
   data() {
     return {
-      monShow: false,
+      codeUrl: "",
+      loginForm: {
+        username: "admin",
+        password: "admin123",
+        rememberMe: false,
+        // code: "",
+        uuid: "",
+      },
+      loginRules: {
+        username: [
+          {
+            required: true,
+            trigger: "blur",
+            message: "please input user name",
+          },
+        ],
+        password: [
+          { required: true, trigger: "blur", message: "please input password" },
+        ],
+        // code: [{ required: true, trigger: "change", message: "请输入验证码" }],
+      },
+      loading: false,
+      // 验证码开关
+      // captchaEnabled: true,
+      // 注册开关
+      register: true,
+      redirect: undefined,
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
-  //   watch: {
-  //     //观察
-  //     $route: "routeHandle",
-  //     keywordSearch: {
-  //       handler(nv) {},
-  //     },
-  //   },
-  methods: {
-    getTableYear() {},
+  watch: {
+    // $route: {
+    //   handler: function (route) {
+    //     this.redirect = route.query && route.query.redirect;
+    //   },
+    //   immediate: true,
+    // },
   },
-  created() {},
-  mounted() {
-    this.$nextTick(function () {
-      // Code that will run only after the entire view has been rendered
-    });
+  created() {
+    this.getCookie();
+  },
+  methods: {
+    getCookie() {
+      const username = Cookies.get("username");
+      const password = Cookies.get("password");
+      const rememberMe = Cookies.get("rememberMe");
+      this.loginForm = {
+        username: username === undefined ? this.loginForm.username : username,
+        password:
+          password === undefined ? this.loginForm.password : decrypt(password),
+        rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+      };
+    },
+    handleLogin() {
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          console.log("valid", valid);
+          console.log("this.loginForm", this.loginForm);
+          this.loading = true;
+          if (this.loginForm.rememberMe) {
+            Cookies.set("username", this.loginForm.username, { expires: 30 });
+            Cookies.set("password", encrypt(this.loginForm.password), {
+              expires: 30,
+            });
+            Cookies.set("rememberMe", this.loginForm.rememberMe, {
+              expires: 30,
+            });
+          } else {
+            Cookies.remove("username");
+            Cookies.remove("password");
+            Cookies.remove("rememberMe");
+          }
+          login(this.loginForm.username, this.loginForm.password)
+            .then((res) => {
+              console.log("r", res);
+              if (res.code == "200") {
+                this.loading = false;
+                // this.$router.push({ path: this.redirect || "/" });
+                sessionStorage.setItem("token", res.token);
+                this.$router.push({ path: "/SystemAdministration" });
+              }
+            })
+            .catch((e) => {
+              this.loading = false;
+            });
+          // console.log("res", res);
+
+          // this.$store
+          //   .dispatch("Login", this.loginForm)
+          //   .then(() => {
+          //     this.$router.push({ path: this.redirect || "/" }).catch(() => {});
+          //   })
+          //   .catch(() => {
+          //     this.loading = false;
+          //   });
+        }
+      });
+    },
   },
 };
 </script>
 
-<style lang="scss" scoped>
+<style rel="stylesheet/scss" lang="scss">
 .login {
+  // display: flex;
+  // justify-content: center;
+  // align-items: center;
+  height: 100%;
+  width: 100%;
+  // background-image: url("../assets/images/login-background.jpg");
+  // background-size: cover;
   .top {
     height: 65px;
     width: 100%;
+    padding: 20px 30px;
     img {
       height: 100%;
     }
@@ -83,6 +209,14 @@ export default {
     background-color: #487aab;
     color: #fff;
     margin-bottom: 40px;
+    padding: 20px;
+    .line1 {
+      font-size: 40px;
+    }
+    .line2 {
+      font-size: 50px;
+      font-weight: 900;
+    }
   }
   .main {
     display: flex;
@@ -153,5 +287,57 @@ export default {
       }
     }
   }
+}
+// .title {
+//   margin: 0px auto 30px auto;
+//   text-align: center;
+//   color: #707070;
+// }
+
+.login-form {
+  border-radius: 6px;
+  background: #ffffff;
+  // width: 400px;
+  padding: 80px 25px 5px 25px;
+  .el-input {
+    height: 38px;
+    input {
+      height: 38px;
+    }
+  }
+  .input-icon {
+    height: 39px;
+    width: 14px;
+    margin-left: 2px;
+  }
+}
+.login-tip {
+  font-size: 13px;
+  text-align: center;
+  color: #bfbfbf;
+}
+.login-code {
+  width: 33%;
+  height: 38px;
+  float: right;
+  img {
+    cursor: pointer;
+    vertical-align: middle;
+  }
+}
+.el-login-footer {
+  height: 40px;
+  line-height: 40px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-family: Arial;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.login-code-img {
+  height: 38px;
 }
 </style>

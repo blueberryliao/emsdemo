@@ -1,5 +1,5 @@
 <template>
-  <div class="test">设备</div>
+  <div class="test">EquipmentManagement</div>
 </template>
 
 <script>

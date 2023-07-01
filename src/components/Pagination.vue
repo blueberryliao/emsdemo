@@ -1,23 +1,21 @@
-/**
- * 分页（公共组件）---v3.0
- */
+/** * 分页（公共组件）---v3.0 */
 <template>
   <div class="paginationCont">
     <div class="leftDiv">
-      <div class="text">合计: {{ config.pageTotal }} 项</div>
+      <div class="text">Total: {{ total }}</div>
     </div>
     <div class="smallDiv">
       <el-pagination
         @current-change="currentChange"
         @size-change="sizeChange"
-        :current-page="config.currentPage"
+        :current-page="pageNum"
         :page-sizes="options"
-        :page-size="config.pageSize"
-        :page-count="5"
+        :page-size="pageSize"
+        :page-count="10"
         layout="prev,pager,next,jumper,sizes,total"
-        :total="parseInt(config.pageTotal)"
+        :total="total"
       >
-      </el-pagination> 
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -32,6 +30,13 @@ export default {
         return {};
       },
     },
+    pageNum: {
+      type: Number,
+    },
+    total: {
+      type: Number,
+    },
+    pageSize: { type: Number },
     options: {
       type: Array,
       default: function () {
@@ -63,16 +68,16 @@ export default {
 };
 </script>
 
-<style  lang="scss" scoped>
+<style lang="scss" scoped>
 .paginationCont {
   width: 100%;
-  height: 0.36rem;
-  line-height: 0.36rem;
+  height: 32px;
+  line-height: 32px;
   // background-color: #fff;
   display: flex;
   justify-content: space-between;
   color: #000000;
-  font-size: 0.14rem;
+  font-size: 14px;
   box-sizing: border-box;
   .leftDiv {
     width: 70%;
@@ -102,75 +107,74 @@ export default {
       // position: absolute;
       // right: 3%;
 
-      height: 0.32rem;
-      line-height: 0.32rem;
-      font-size:0.14rem;
+      height: 32px;
+      line-height: 32px;
+      font-size: 14px;
       order: 5;
-      margin: 0 0.2rem 0 0.05rem;
+      margin: 0 20px 0 5px;
     }
-   .el-pagination__sizes::v-deep {
-      height: 0.32rem;
-      line-height: 0.32rem;
+    .el-pagination__sizes::v-deep {
+      height: 32px;
+      line-height: 32px;
       order: 4;
-      margin-left: 0.05rem;
+      margin-left: 5px;
 
       // display: none;
     }
     .el-pagination .btn-next::v-deep,
-   .el-pagination .btn-prev::v-deep {
+    .el-pagination .btn-prev::v-deep {
       background: none;
       color: #000000;
-      height: 0.32rem;
-      line-height: 0.32rem;
-      width: 0.32rem;
+      height: 32px;
+      line-height: 32px;
+      width: 32px;
       border: 1px solid #d9d9d9;
       border-radius: 4px;
       padding: 0;
     }
-   .el-pagination .btn-next::v-deep {
-      margin-left: 0.08rem;
+    .el-pagination .btn-next::v-deep {
+      margin-left: 8px;
     }
 
-   .el-pagination button:disabled::v-deep {
+    .el-pagination button:disabled::v-deep {
       background-color: none;
       color: #000000;
-      height: 0.32rem;
-      line-height: 0.32rem;
+      height: 32px;
+      line-height: 32px;
     }
-    .el-pager li ::v-deep{
+    .el-pager li ::v-deep {
       background: none;
       color: #666666;
-      height: 0.32rem;
-      line-height: 0.32rem;
-      font-size: 0.14rem;
+      height: 32px;
+      line-height: 32px;
+      font-size: 0.14rem14px;
       border: 1px solid #d9d9d9;
       border-radius: 4px;
-      width: 0.32rem;
+      width: 32px;
       padding: 0;
-      margin-left: 0.08rem;
+      margin-left: 8px;
     }
-   .el-pager li.active ::v-deep{
+    .el-pager li.active ::v-deep {
       color: #fff;
       background-color: red;
     }
   }
-  .el-input__inner ::v-deep{
+  .el-input__inner ::v-deep {
     height: 0.32rem !important;
-    font-size:0.14rem;
+    font-size: 0.14rem;
   }
   .el-input__icon::v-deep {
     height: 0.32rem;
     line-height: 0.32rem;
   }
-  .el-input--mini .el-input__inner ::v-deep{
+  .el-input--mini .el-input__inner ::v-deep {
     height: 0.32rem;
   }
- .el-pager li ::v-deep{
+  .el-pager li ::v-deep {
     width: auto !important;
-    padding:0 0.1rem !important;
-    
+    padding: 0 0.1rem !important;
   }
-  .el-pagination__editor ::v-deep{
+  .el-pagination__editor ::v-deep {
     line-height: inherit;
   }
 }

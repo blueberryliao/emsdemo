@@ -1,0 +1,51 @@
+$h1: 0.53rem;
+$h2: 0.23rem;
+$large:0.18rem;
+$normal: 0.16rem;
+$small: 0.14rem;
+$form_ele_height: .32rem; 
+$button_pading: .23rem;
+@mixin button {
+  height: $form_ele_height; 
+  padding: 0 $button_pading;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
+
+@mixin input {
+  height: $form_ele_height; 
+  input {
+    font-size: $small;
+    height: $form_ele_height;
+    line-height: $form_ele_height;
+  }
+  .el-input__suffix {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .el-input__suffix-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #0090ff;
+    }
+  }
+}
+
+$--font-line-height-secondary: .16rem;
+$--font-size-medium: .16rem;
+
+$primary_button_start_color: #4bcbeb;
+$primary_button_start_color--disabled: mix($primary_button_start_color, #fff, 50%);
+$primary_button_start_color--hover: mix($primary_button_start_color, #fff, 75%);
+
+$primary_button_end_color: #0090ff;
+$primary_button_end_color--disabled: mix($primary_button_end_color, #fff, 50%);
+$primary_button_end_color--hover: mix($primary_button_end_color, #fff, 75%);
+
+$primary_button_bgc: linear-gradient(153deg, $primary_button_start_color 0%, $primary_button_end_color 100%);
+$primary_button_bgc--disabled: linear-gradient(153deg, $primary_button_start_color--disabled 0%, $primary_button_end_color--disabled 100%);
+$primary_button_bgc--hover: linear-gradient(153deg, $primary_button_start_color--hover 0%, $primary_button_end_color--hover 100%);
