@@ -149,8 +149,8 @@
           :show-overflow-tooltip="true"
         >
           <template slot-scope="scope">
-            <span @click="() => taskDetail(scope.row)" class="task_name">
-              {{ scope.row.taskName }}
+            <span>
+              {{ scope.row.fullName }}
             </span>
           </template>
         </el-table-column>
@@ -255,13 +255,6 @@
       </el-table>
     </div>
     <div class="page">
-      <!-- <Pagination
-        v-show="total > 0"
-        :total="total"
-        :page.sync="pageNum"
-        :limit.sync="pageSize"
-        @pagination="getUserList"
-      ></Pagination> -->
       <Pagination
         :total="total"
         :page.sync="pageNum"
@@ -274,7 +267,8 @@
 
 <script>
 import { getUserList, changeStatus } from "@/api/user";
-import Pagination from "../../components/Pagination.vue";
+import { getRoleList, deleteUser } from "@/api/user";
+import Pagination from "../../components/Pagination/index.vue";
 
 export default {
   components: { Pagination },
@@ -303,11 +297,14 @@ export default {
       tableData: [],
       loading: false,
       checkBoxList: [],
+      checkedIds: [],
       // 总条数
       total: 100,
       pageNum: 1,
       pageSize: 10,
       timer: null,
+      systemUserAuthorityList: [],
+      equipmentUserAuthorityList: [],
     };
   },
   //   computed: {
@@ -322,21 +319,44 @@ export default {
   //       },
   //     },
   //   },
-  //   watch: {
-  //     //观察
-  //     $route: "routeHandle",
-  //     keywordSearch: {
-  //       handler(nv) {},
-  //     },
-  //   },
+  watch: {
+    //观察
+    // $route: "routeHandle",
+    type: {
+      handler(nv) {
+        this.authorityOptions = [{ label: "all", value: "" }];
+        if (nv == 1) {
+          this.systemUserAuthorityList.map((item) => {
+            this.authorityOptions.push({
+              label: item.roleName,
+              value: item.authority,
+            });
+          });
+        } else if (nv == 2) {
+          this.equipmentUserAuthorityList.map((item) => {
+            this.authorityOptions.push({
+              label: item.roleName,
+              value: item.authority,
+            });
+          });
+        }
+      },
+    },
+  },
   methods: {
     getUserList() {
       this.loading = true;
-      getUserList().then((res) => {
+      let query = {
+        userName: this.userName,
+        fullName: this.fullName,
+        userType: this.type,
+        authority: this.authority,
+      };
+      getUserList(query).then((res) => {
         if (res.code == 200) {
           console.log("res.rows", res.rows);
           this.tableData = res.rows;
-          this.total = res.rows.lenght;
+          this.total = res.total;
           this.loading = false;
         }
       });
@@ -363,6 +383,10 @@ export default {
       console.log(val);
       console.log("_____________________________");
       this.checkBoxList = val;
+      this.checkedIds = [];
+      this.checkBoxList.map((item) => {
+        this.checkedIds.push(item.userId);
+      });
     },
     //多选框的处理
     selectable(row, index) {
@@ -389,21 +413,49 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete() {
-      console.log("this.checkBoxList", this.checkBoxList);
-      // const jobIds = row.jobId || this.ids;
-      this.$modal.confirm(`Are you sure you want to delete?`);
-      // .then(function () {
-      //   return delJob(jobIds);
-      // })
-      // .then(() => {
-      //   this.getList();
-      //   this.$modal.msgSuccess("删除成功");
-      // })
-      // .catch(() => {});
+      console.log("this.checkedIds", this.checkedIds);
+      // this.$modal.confirm(`Are you sure you want to delete?`);
+      this.$msgbox
+        .confirm(`Are you sure you want to delete?`, "System Info", {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        })
+        .then(() => {
+          deleteUser(this.checkedIds)
+            .then((res) => {
+              if (res.code == 200) {
+                this.getList();
+                this.$message.success("deleted successfully");
+              }
+            })
+            .catch(() => {});
+        });
+    },
+    //获取authority菜单
+    getRoleList() {
+      å;
+      getRoleList({
+        roleType: 1,
+      }).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          this.systemUserAuthorityList = res.rows;
+        }
+      });
+      getRoleList({
+        roleType: 2,
+      }).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          this.equipmentUserAuthorityList = res.rows;
+        }
+      });
     },
   },
   created() {
     this.getUserList();
+    this.getRoleList();
   },
   mounted() {
     this.$nextTick(function () {

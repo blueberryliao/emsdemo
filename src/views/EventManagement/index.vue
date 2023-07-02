@@ -247,7 +247,7 @@
 
 <script>
 import { getUserList } from "@/api/user";
-import Pagination from "../../components/Pagination.vue";
+import Pagination from "@/components/Pagination/index.vue";
 
 export default {
   components: { Pagination },

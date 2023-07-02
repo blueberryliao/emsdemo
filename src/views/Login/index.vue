@@ -188,15 +188,10 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss">
 .login {
-  // display: flex;
-  // justify-content: center;
-  // align-items: center;
   height: 100%;
   width: 100%;
-  // background-image: url("../assets/images/login-background.jpg");
-  // background-size: cover;
   .top {
-    height: 65px;
+    height: 80px;
     width: 100%;
     padding: 20px 30px;
     img {
@@ -204,35 +199,36 @@ export default {
     }
   }
   .title {
-    height: 150px;
+    height: 160px;
     width: 100%;
     background-color: #487aab;
     color: #fff;
     margin-bottom: 40px;
     padding: 20px;
     .line1 {
-      font-size: 40px;
+      font-size: 45px;
     }
     .line2 {
-      font-size: 50px;
+      font-size: 55px;
       font-weight: 900;
     }
   }
   .main {
     display: flex;
     justify-content: space-around;
-
+    padding: 40px 100px;
     .pic {
-      height: 500px;
+      height: 560px;
       img {
         height: 100%;
       }
     }
     .login-case {
-      height: 500px;
-      width: 400px;
+      height: 560px;
+      width: 460px;
       border: 1px solid #e4e4e4;
       position: relative;
+      padding-top: 50px;
       .box {
         width: 400px;
         height: 300px;

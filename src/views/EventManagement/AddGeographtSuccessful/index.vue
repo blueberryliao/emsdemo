@@ -3,9 +3,7 @@
 </template>
 
 <script>
-// import Request from "@/common/net/request.js";
-// import Tab from "@/components/Tab/tabIncome.vue";
-// const request = new Request();
+import { getGeographyList } from "../../../api/geography.js";
 export default {
   //   components: {
   //     //导入的组件
@@ -36,9 +34,15 @@ export default {
   //     },
   //   },
   methods: {
-    getTableYear() {},
+    getGeographyList() {
+      getGeographyList().then((res) => {
+        console.log("res", res);
+      });
+    },
   },
-  created() {},
+  created() {
+    this.getGeographyList();
+  },
   mounted() {
     this.$nextTick(function () {
       // Code that will run only after the entire view has been rendered
