@@ -6,11 +6,17 @@
           <div slot="header" class="card-title">
             <span>{{ roles[0].role }}</span>
           </div>
-          <el-menu v-for="item in systemUserRoles" :key="item.roleName">
+          <el-menu
+            v-for="item in systemUserRoles"
+            :key="item.roleName"
+            default-active="Regular User"
+          >
+            <!-- <el-submenu> -->
             <el-menu-item :index="item.roleName" @click="clickUser(item)">
               <i class="el-icon-user"></i>
               <span>{{ item.roleName }}</span>
             </el-menu-item>
+            <!-- </el-submenu> -->
           </el-menu>
         </el-card>
       </div>
@@ -42,7 +48,7 @@
               @change="handleCheckedMenusChange"
             >
               <div v-for="menu in menus" :key="menu.id">
-                <el-checkbox :label="menu.label">{{ menu.label }}</el-checkbox>
+                <el-checkbox :label="menu.id">{{ menu.label }}</el-checkbox>
               </div>
             </el-checkbox-group>
           </div>
@@ -55,14 +61,12 @@
           <div slot="header" class="card-title">
             <span>{{ roles[1].role }}</span>
           </div>
-          <!-- <div
-            v-for="(item, index) in equipmentUserRoles"
-            :key="index"
-            class="text item"
+
+          <el-menu
+            v-for="item in equipmentUserRoles"
+            :key="item.roleName"
+            default-active="VRVM User"
           >
-            {{ item.roleName }}
-          </div> -->
-          <el-menu v-for="item in equipmentUserRoles" :key="item.roleName">
             <el-menu-item :index="item.roleName">
               <i class="el-icon-user"></i>
               <span>{{ item.roleName }}</span>
@@ -100,7 +104,7 @@
 </template>
 
 <script>
-import { getRoleList, getAuthority } from "@/api/user";
+import { getRoleList, getAuthority, updateRole } from "@/api/user";
 export default {
   //   components: {
   //     //导入的组件
@@ -118,11 +122,11 @@ export default {
           roleType: 2,
         },
       ],
-
       systemUserRoles: [],
       menuCheckAll: false,
       checkedMenus: [],
       menus: [],
+      currentSystemUserRole: null,
       isMenuIndeterminate: true,
       equipmentCheckAll: true,
       isEquimentIndeterminate: false,
@@ -165,19 +169,29 @@ export default {
     },
     handleCheckedMenusChange(value) {
       console.log("value", value);
+      this.checkedMenus = value;
       let checkedCount = value.length;
       this.menuCheckAll = checkedCount === this.menus.length;
       this.isMenuIndeterminate =
         checkedCount > 0 && checkedCount < this.menus.length;
       //修改绑定的权限
+      let data = {
+        roleId: this.currentSystemUserRole.roleId,
+        menuIds: this.checkedMenus,
+      };
+      updateRole(data)
+        .then((res) => {
+          console.log("res", res);
+        })
+        .catch();
     },
     handlEequipmentCheckAllChange() {},
     clickUser(item) {
       console.log("item", item);
-      let roleId = item.roleId;
-      console.log("roldId", roleId);
+      this.currentSystemUserRole = item;
+      console.log("roldId", this.currentSystemUserRole.roleId);
       //获取系统用户权限
-      getAuthority(roleId).then((res) => {
+      getAuthority(this.currentSystemUserRole.roleId).then((res) => {
         console.log("res", res);
         if (res.code == 200) {
           this.menus = res.menus;

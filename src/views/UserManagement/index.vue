@@ -138,7 +138,7 @@
             <span v-if="scope.row.password">
               {{ scope.row.password }}
             </span>
-            <span v-else> / </span>
+            <span v-else> ****** </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -167,9 +167,9 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="authority"
+          prop="roleName"
           label="Authority"
-          min-width="8%"
+          min-width="15%"
           align="center"
           show-overflow-tooltip
         >
@@ -329,14 +329,14 @@ export default {
           this.systemUserAuthorityList.map((item) => {
             this.authorityOptions.push({
               label: item.roleName,
-              value: item.authority,
+              value: item.roleKey,
             });
           });
         } else if (nv == 2) {
           this.equipmentUserAuthorityList.map((item) => {
             this.authorityOptions.push({
               label: item.roleName,
-              value: item.authority,
+              value: item.roleKey,
             });
           });
         }
@@ -355,6 +355,12 @@ export default {
       getUserList(query).then((res) => {
         if (res.code == 200) {
           console.log("res.rows", res.rows);
+          res.rows.map((row) => {
+            row.roleName = "";
+            row.roles.forEach((role) => {
+              row.roleName += role.roleName + " ";
+            });
+          });
           this.tableData = res.rows;
           this.total = res.total;
           this.loading = false;
@@ -425,7 +431,7 @@ export default {
           deleteUser(this.checkedIds)
             .then((res) => {
               if (res.code == 200) {
-                this.getList();
+                this.getUserList();
                 this.$message.success("deleted successfully");
               }
             })
@@ -434,7 +440,6 @@ export default {
     },
     //获取authority菜单
     getRoleList() {
-      å;
       getRoleList({
         roleType: 1,
       }).then((res) => {

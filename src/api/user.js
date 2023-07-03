@@ -56,3 +56,13 @@ export const getAuthority = (id) => {
     // params: query,
   });
 };
+
+//修改保存角色
+
+export const updateRole = (data) => {
+  return request({
+    url: "/system/role ",
+    method: "put",
+    data: data,
+  });
+};

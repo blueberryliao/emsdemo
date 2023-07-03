@@ -26,12 +26,14 @@
       <el-form
         :inline="true"
         :model="formInline"
+        :rules="rules"
+        ref="ruleForm"
         class="demo-form-inline"
         label-width="150px"
       >
         <el-row>
           <el-col :span="12">
-            <el-form-item label="User Name">
+            <el-form-item label="User Name" prop="userName">
               <el-input
                 v-model="formInline.userName"
                 style="width: 300px"
@@ -39,22 +41,17 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Password">
+            <el-form-item label="Password" prop="password">
               <el-input
                 v-model="formInline.password"
                 style="width: 300px"
               ></el-input>
-              <!-- <el-select v-model="formInline.password">
-                
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
-              </el-select> -->
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="Full Name">
+            <el-form-item label="Full Name" prop="fullName">
               <el-input
                 v-model="formInline.fullName"
                 style="width: 300px"
@@ -62,7 +59,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Gender">
+            <el-form-item label="Gender" prop="gender">
               <el-select v-model="formInline.gender" style="width: 300px">
                 <el-option label="male" value="0"></el-option>
                 <el-option label="female" value="1"></el-option>
@@ -72,7 +69,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="User Type">
+            <el-form-item label="User Type" prop="userType">
               <el-select v-model="formInline.userType" style="width: 300px">
                 <el-option
                   v-for="item in typeOptions"
@@ -85,8 +82,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Authority">
-              <el-select v-model="formInline.authority" style="width: 300px">
+            <el-form-item label="Authority" prop="roleIds">
+              <el-select
+                v-model="formInline.roleIds"
+                multiple
+                style="width: 300px"
+              >
                 <el-option
                   v-for="item in authorityOptions"
                   :key="item.value"
@@ -100,7 +101,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="Position">
+            <el-form-item label="Position" prop="position">
               <el-input
                 v-model="formInline.position"
                 style="width: 300px"
@@ -108,7 +109,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Jurisdiction">
+            <el-form-item label="Jurisdiction" prop="jurisdictionId">
               <el-input
                 v-model="formInline.jurisdictionId"
                 style="width: 300px"
@@ -118,7 +119,7 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="Phone Number">
+            <el-form-item label="Phone Number" prop="phoneNumber">
               <el-input
                 v-model="formInline.phoneNumber"
                 style="width: 300px"
@@ -126,21 +127,28 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Digital Certificates">
-              <el-input
-                v-model="formInline.digitalCertificates"
-                style="width: 300px"
-              ></el-input>
+            <el-form-item
+              label="Digital Certificates"
+              prop="digitalCertificates"
+            >
+              <span @click="toAddDigital" class="digital"
+                ><i class="el-icon-circle-plus-outline"></i>
+              </span>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="Status">
-              <el-input
-                v-model="formInline.status"
-                style="width: 300px"
-              ></el-input>
+            <el-form-item label="Status" prop="status">
+              <span
+                v-if="formInline.status == 1"
+                class="status-lock"
+                @click="changeStatus()"
+                ><i class="el-icon-lock"></i>
+              </span>
+              <span v-else @click="changeStatus()" class="status-unlock"
+                ><i class="el-icon-unlock"></i>
+              </span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -171,7 +179,67 @@ export default {
         children: "children",
         label: "districtName",
       },
-      formInline: {},
+      formInline: {
+        userName: "",
+        Password: "",
+        fullName: "",
+        gender: "",
+        userType: "",
+        roleIds: [],
+        position: "",
+        jurisdictionId: "",
+        phoneNumber: "",
+        digitalCertificates: "",
+        status: 0,
+      },
+      rules: {
+        userName: [
+          {
+            required: true,
+            message: "please input user name",
+            trigger: "blur",
+          },
+          // { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+        password: [
+          { required: true, message: "please input password", trigger: "blur" },
+        ],
+        fullName: [
+          {
+            required: true,
+            message: "please input full name",
+            trigger: "blur",
+          },
+        ],
+        userType: [
+          {
+            required: true,
+            message: "please choose user type",
+            trigger: "change",
+          },
+        ],
+        roleIds: [
+          {
+            required: true,
+            message: "please set authority",
+            trigger: "change",
+          },
+        ],
+        position: [
+          {
+            required: true,
+            message: "please input position",
+            trigger: "blur",
+          },
+        ],
+        jurisdictionId: [
+          {
+            required: true,
+            message: "please click the jurisdiction ",
+            trigger: "change",
+          },
+        ],
+      },
       geographyList: [],
       typeOptions: [
         {
@@ -206,19 +274,20 @@ export default {
     "formInline.userType": {
       handler(nv) {
         this.authorityOptions = [];
-        // this.formInline.authority = "";
+        this.$set(this.formInline, "roleIds", []);
+        // this.formInline.roleIds = "";
         if (nv == 1) {
           this.systemUserAuthorityList.map((item) => {
             this.authorityOptions.push({
               label: item.roleName,
-              value: item.roleName,
+              value: item.roleId,
             });
           });
         } else if (nv == 2) {
           this.equipmentUserAuthorityList.map((item) => {
             this.authorityOptions.push({
               label: item.roleName,
-              value: item.roleName,
+              value: item.roleId,
             });
           });
         }
@@ -272,13 +341,50 @@ export default {
         `${data.districtName} , ${data.id}`
       );
     },
-    cancel() {},
+    cancel() {
+      this.$msgbox
+        .confirm(`Are you sure you want to clear form?`, "System Info", {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        })
+        .then(() => {
+          console.log("this.formInline", this.formInline);
+          this.formInline = {
+            userName: "",
+            Password: "",
+            fullName: "",
+            gender: "",
+            userType: "",
+            roleIds: [],
+            position: "",
+            jurisdictionId: "",
+            phoneNumber: "",
+            digitalCertificates: "",
+            status: 0,
+          };
+        });
+    },
     saveForm() {
+      this.$refs.ruleForm.validate((valid) => {
+        if (!valid) {
+          return this.$message.error(
+            "please finish the required form validation"
+          );
+        }
+      });
       console.log("this.formInline", this.formInline);
       addUser(this.formInline).then((res) => {
         console.log("res", res);
+        if (res.code == 200) {
+          this.$router.push({ path: "/SystemAdministration" });
+        }
       });
     },
+    changeStatus() {
+      this.$set(this.formInline, "status", this.formInline.status == 0 ? 1 : 0);
+    },
+    toAddDigital() {},
   },
   created() {
     this.getGeographyList();
@@ -314,6 +420,21 @@ export default {
       display: flex;
       justify-content: center;
       margin-top: 40px;
+    }
+    .digital {
+      font-size: 22px;
+      color: #d4d4d7;
+      cursor: not-allowed;
+    }
+    .status-lock {
+      font-size: 22px;
+      color: #ae3d2e;
+      cursor: pointer;
+    }
+    .status-unlock {
+      font-size: 22px;
+      color: #5a9cf8;
+      cursor: pointer;
     }
   }
 
