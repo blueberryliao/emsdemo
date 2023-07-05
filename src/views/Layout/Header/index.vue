@@ -22,12 +22,20 @@ export default {
   },
   methods: {
     toLogout() {
-      logout().then((res) => {
-        console.log("res", res);
-        if (res.code == 200) {
-          this.$router.push({ path: "/" });
-        }
-      });
+      this.$msgbox
+        .confirm(`Are you sure you want to logout?`, "System Info", {
+          confirmButtonText: "Confirm",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        })
+        .then(() => {
+          logout().then((res) => {
+            console.log("res", res);
+            if (res.code == 200) {
+              this.$router.push({ path: "/" });
+            }
+          });
+        });
     },
   },
   created() {},

@@ -90,9 +90,10 @@
         :data="tableData"
         style="width: 100%"
         ref="tableData"
-        row-key="userId"
+        row-key="id"
         @selection-change="getCheckBoxList"
         stripe
+        :highlight-current-row="true"
       >
         <el-table-column
           type="selection"
@@ -149,10 +150,6 @@
           align="center"
           show-overflow-tooltip
         >
-          <template slot-scope="scope">
-            <span v-if="scope.row.sex == 0">female</span>
-            <span v-if="scope.row.sex == 1">male</span>
-          </template>
         </el-table-column>
         <el-table-column
           prop="jurisdiction"
@@ -161,10 +158,6 @@
           align="center"
           show-overflow-tooltip
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.authority == 0">female</span>
-            <span v-if="scope.row.authority == 1">male</span>
-          </template> -->
         </el-table-column>
         <el-table-column
           prop="location"
@@ -173,72 +166,20 @@
           min-width="15%"
           :show-overflow-tooltip="true"
         >
-          <template slot-scope="scope">
-            <span v-if="scope.row.userType == 1">systerm user</span>
-            <span v-if="scope.row.userType == 2">equiment user</span>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column
-          prop="position"
-          label="Positon"
-          align="center"
-          min-width="10%"
-          :show-overflow-tooltip="true"
-        >
-          <template slot-scope="scope">
-            <span v-if="scope.row.position">
-              {{ scope.row.position }}
-            </span>
-            <span v-else> / </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="jurisdiction"
-          label="Jurisdiction"
-          min-width="8%"
-          align="center"
-        >
-          <template slot-scope="scope">
-            <span v-if="scope.row.jurisdiction">
-              {{ scope.row.jurisdiction }}
-            </span>
-            <span v-else> / </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="digitalCertificate"
-          label="Digital Certificate"
-          min-width="10%"
-          align="center"
-          :show-overflow-tooltip="true"
-        >
-          <template slot-scope="scope">
-            <span v-if="scope.row.digitalCertificate">
-              {{ scope.row.digitalCertificate }}
-            </span>
-            <span v-else> / </span>
-          </template>
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="Status"
-          prop="status"
+          label="Operation"
           align="center"
           :show-overflow-tooltip="true"
           min-width="5%"
         >
           <template slot-scope="scope">
-            <span
-              v-if="scope.row.status == 1"
-              class="status-lock"
-              @click="changeStatus(scope.row)"
-              ><i class="el-icon-lock"></i>
-            </span>
-            <span v-else @click="changeStatus(scope.row)" class="status-unlock"
-              ><i class="el-icon-unlock"></i>
+            <span @click="toEdit(scope.row)" class="edit"
+              ><i class="el-icon-edit"></i>
             </span>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
     </div>
     <div class="page">
@@ -246,41 +187,61 @@
         :total="total"
         :page.sync="pageNum"
         :limit.sync="pageSize"
-        @pagination="getUserList"
+        @pagination="getEquipmentList"
       ></Pagination>
     </div>
   </div>
 </template>
 
 <script>
-import { getUserList, changeStatus } from "@/api/user";
-import { getRoleList, deleteUser } from "@/api/user";
+import { getEquipmentList, deleteEquipment } from "@/api/equipment";
 import Pagination from "../../components/Pagination/index.vue";
 
 export default {
   components: { Pagination },
-  //   components: {
-  //     //导入的组件
-  //     Tab,
-  //   },
   data() {
     return {
-      userName: "",
-      fullName: "",
-      type: "",
-      typeOptions: [
+      deviceType: "",
+      deviceTypeOptions: [
         { label: "all", value: "" },
         {
-          label: "System User",
-          value: 1,
+          label: "VRVM",
+          value: "VRVM",
         },
         {
-          label: "Equipment User",
-          value: 2,
+          label: "EVM",
+          value: "EVM",
+        },
+        {
+          label: "PCOS",
+          value: "PCOS",
+        },
+        {
+          label: "CCOS",
+          value: "CCOS",
         },
       ],
-      authority: "",
-      authorityOptions: [{ label: "all", value: "" }],
+      use: "",
+      useOptions: [
+        { label: "all", value: "" },
+        {
+          label: "Registration",
+          value: "Registration",
+        },
+        {
+          label: "Verification",
+          value: "Verification",
+        },
+        {
+          label: "Voting",
+          value: "Voting",
+        },
+        {
+          label: "Counting",
+          value: "Counting",
+        },
+      ],
+      jurisdiction: "",
       tableData: [],
       loading: false,
       checkBoxList: [],
@@ -309,43 +270,22 @@ export default {
   watch: {
     //观察
     // $route: "routeHandle",
-    type: {
-      handler(nv) {
-        this.authorityOptions = [{ label: "all", value: "" }];
-        if (nv == 1) {
-          this.systemUserAuthorityList.map((item) => {
-            this.authorityOptions.push({
-              label: item.roleName,
-              value: item.roleKey,
-            });
-          });
-        } else if (nv == 2) {
-          this.equipmentUserAuthorityList.map((item) => {
-            this.authorityOptions.push({
-              label: item.roleName,
-              value: item.roleKey,
-            });
-          });
-        }
-      },
-    },
   },
   methods: {
-    getUserList() {
+    getEquipmentList() {
       this.loading = true;
       let query = {
-        userName: this.userName,
-        fullName: this.fullName,
-        userType: this.type,
-        authority: this.authority,
+        deviceType: this.deviceType,
+        use: this.use,
+        jurisdiction: this.jurisdiction,
       };
-      getUserList(query).then((res) => {
+      getEquipmentList(query).then((res) => {
         if (res.code == 200) {
           console.log("res.rows", res.rows);
           res.rows.map((row) => {
-            row.roleName = "";
-            row.roles.forEach((role) => {
-              row.roleName += role.roleName + " ";
+            row.userList = "";
+            row.sysUserList.forEach((role) => {
+              row.userList += role.userName + " ";
             });
           });
           this.tableData = res.rows;
@@ -359,7 +299,7 @@ export default {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         this.pageNum = 1;
-        this.getUserList();
+        this.getEquipmentList();
       }, 300);
     },
     // handleSizeChange(val) {
@@ -368,6 +308,16 @@ export default {
     // handleCurrentChange(val) {
     //   console.log(`当前页: ${val}`);
     // },
+    toEdit(row) {
+      console.log("row", row);
+      // // 会调用两遍，一次tagName是INPUT,一次是SPAN,阻止一次，否则会调用两次
+      // if (event.target.tagName === 'INPUT') {
+      //      return;
+      //  }
+      //  this.init(); // 调用接口刷新页面
+
+      this.$router.push({ path: "/EquipmentManagement/Add", query: row });
+    },
     toAdd() {
       this.$router.push({ path: "/EquipmentManagement/Add" });
     },
@@ -378,7 +328,7 @@ export default {
       this.checkBoxList = val;
       this.checkedIds = [];
       this.checkBoxList.map((item) => {
-        this.checkedIds.push(item.userId);
+        this.checkedIds.push(item.id);
       });
     },
     //多选框的处理
@@ -415,39 +365,20 @@ export default {
           type: "warning",
         })
         .then(() => {
-          deleteUser(this.checkedIds)
+          deleteEquipment(this.checkedIds)
             .then((res) => {
               if (res.code == 200) {
-                this.getUserList();
+                this.getEquipmentList();
                 this.$message.success("deleted successfully");
               }
             })
             .catch(() => {});
         });
     },
-    //获取authority菜单
-    getRoleList() {
-      getRoleList({
-        roleType: 1,
-      }).then((res) => {
-        console.log(res);
-        if (res.code == 200) {
-          this.systemUserAuthorityList = res.rows;
-        }
-      });
-      getRoleList({
-        roleType: 2,
-      }).then((res) => {
-        console.log(res);
-        if (res.code == 200) {
-          this.equipmentUserAuthorityList = res.rows;
-        }
-      });
-    },
   },
   created() {
-    this.getUserList();
-    this.getRoleList();
+    this.getEquipmentList();
+    // this.getRoleList();
   },
   mounted() {
     this.$nextTick(function () {
@@ -504,11 +435,7 @@ export default {
     padding: 0 10px;
     height: calc(100% - 120px - 32px);
     overflow: auto;
-    .status-lock {
-      color: #ae3d2e;
-      cursor: pointer;
-    }
-    .status-unlock {
+    .edit {
       color: #5a9cf8;
       cursor: pointer;
     }

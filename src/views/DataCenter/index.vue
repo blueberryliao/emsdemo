@@ -1,19 +1,46 @@
 <template>
-  <div class="test">data center</div>
+  <div class="data-center">
+    <div class="tab">
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane name="first">
+          <span slot="label"><i class="el-icon-user"></i> Voters</span>
+          <Voters></Voters>
+        </el-tab-pane>
+        <el-tab-pane name="second">
+          <span slot="label"><i class="el-icon-s-ticket"></i> Ballots</span>
+          <Ballots></Ballots>
+        </el-tab-pane>
+        <el-tab-pane name="third">
+          <span slot="label"><i class="el-icon-s-custom"></i> Candidates</span>
+          <Candidates></Candidates>
+        </el-tab-pane>
+        <el-tab-pane name="fourth">
+          <span slot="label" name="third"
+            ><i class="el-icon-s-data"></i> Results</span
+          >
+          <Results></Results>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+  </div>
 </template>
 
 <script>
-// import Request from "@/common/net/request.js";
-// import Tab from "@/components/Tab/tabIncome.vue";
-// const request = new Request();
+import Voters from "./components/Voters.vue";
+import Ballots from "./components/Ballots";
+import Candidates from "./components/Candidates";
+import Results from "./components/Results";
 export default {
-  //   components: {
-  //     //导入的组件
-  //     Tab,
-  //   },
+  components: {
+    //导入的组件
+    Voters,
+    Ballots,
+    Candidates,
+    Results,
+  },
   data() {
     return {
-      monShow: false,
+      activeName: "second",
     };
   },
   //   computed: {
@@ -51,6 +78,7 @@ export default {
 * {
   box-sizing: border-box;
 }
-.test {
+.data-center {
+  padding: 10px;
 }
 </style>

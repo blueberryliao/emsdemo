@@ -93,9 +93,9 @@
           </el-row>
           <el-row>
             <el-col :span="12">
-              <el-form-item label="Jurisdiction" prop="jurisdictionId">
+              <el-form-item label="Jurisdiction" prop="jurisdiction">
                 <el-input
-                  v-model="formInline.jurisdictionId"
+                  v-model="formInline.jurisdiction"
                   style="width: 300px"
                 ></el-input>
               </el-form-item>
@@ -111,85 +111,41 @@
           </el-row>
         </div>
 
-        <!-- <el-row>
-          <el-col :span="12">
-            <el-form-item label="Position" prop="position">
-              <el-input
-                v-model="formInline.position"
-                style="width: 300px"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="Jurisdiction" prop="jurisdictionId">
-              <el-input
-                v-model="formInline.jurisdictionId"
-                style="width: 300px"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="Phone Number" prop="phoneNumber">
-              <el-input
-                v-model="formInline.phoneNumber"
-                style="width: 300px"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item
-              label="Digital Certificates"
-              prop="digitalCertificates"
-            >
-              <span @click="toAddDigital" class="digital"
-                ><i class="el-icon-circle-plus-outline"></i>
-              </span>
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="Status" prop="status">
-              <span
-                v-if="formInline.status == 1"
-                class="status-lock"
-                @click="changeStatus()"
-                ><i class="el-icon-lock"></i>
-              </span>
-              <span v-else @click="changeStatus()" class="status-unlock"
-                ><i class="el-icon-unlock"></i>
-              </span>
-            </el-form-item>
-          </el-col>
-        </el-row> -->
         <div class="middle">
           <div class="title-box">
             <div class="title">
               Authorized User
-              <i class="el-icon-circle-plus-outline"></i>
+              <el-popover placement="right" width="400" trigger="click">
+                <el-checkbox-group
+                  v-model="selectedUserList"
+                  @change="handleCheckedUsersChange()"
+                >
+                  <div>
+                    <el-checkbox
+                      v-for="user in users"
+                      :label="user.userName"
+                      :key="user.userId"
+                      >{{ user.userName }}</el-checkbox
+                    >
+                  </div>
+                </el-checkbox-group>
+                <i class="el-icon-circle-plus-outline add" slot="reference"></i>
+              </el-popover>
             </div>
+
             <div class="op"></div>
           </div>
-          <el-row>
-            <el-col :span="12">
-              <el-form-item label="User1" prop="user1">
-                <el-input
-                  v-model="formInline.user1"
-                  style="width: 300px"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12">
-              <el-form-item label="User2" prop="user2">
-                <el-input
-                  v-model="formInline.user2"
-                  style="width: 300px"
-                ></el-input>
-              </el-form-item>
-            </el-col>
-          </el-row>
+          <div class="user-list">
+            <el-tag
+              :key="user"
+              v-for="user in selectedUserList"
+              closable
+              :disable-transitions="false"
+              @close="handleClose(user)"
+            >
+              {{ user }}
+            </el-tag>
+          </div>
         </div>
         <div class="bottom">
           <div class="title-box">
@@ -197,61 +153,108 @@
             <div class="op"></div>
           </div>
           <div class="extra-info">
-            <el-row>
-              <el-col :span="8">
-                <el-checkbox v-model="checked"
+            <el-row class="row">
+              <el-col :span="6">
+                <el-checkbox v-model="checked1"
                   >Vote review in the screen</el-checkbox
                 ></el-col
               >
               <el-col :span="12">
                 View period
-                <span class="empty-block">**</span>
-                s
+                <!-- <span class="empty-block">**</span>
+                s -->
+                <input class="empty-block" v-model="input1" />s
               </el-col>
             </el-row>
-            <el-row>
-              <el-col :span="8">
-                <el-checkbox v-model="checked"
+            <el-row class="row">
+              <el-col :span="6">
+                <el-checkbox v-model="checked2"
                   >Printing of vote receipt</el-checkbox
                 ></el-col
               >
             </el-row>
-            <el-row>
-              <el-col :span="8">
-                <el-checkbox v-model="checked"
+            <el-row class="row-narrow">
+              <el-col :span="6">
+                <el-checkbox v-model="checked3"
                   >Ballot security mark detection</el-checkbox
                 ></el-col
               >
             </el-row>
-            <el-row>
+            <el-row class="row">
+              <el-col :span="5" class="start-space">
+                <el-radio v-model="radio" label="1"
+                  >Reject Invalid ballot</el-radio
+                >
+              </el-col>
               <el-col :span="12">
-                <el-checkbox v-model="checked"
-                  >Ballot divert</el-checkbox
-                ></el-col
-              >
+                <el-radio v-model="radio" label="2"
+                  >Put invalid ballot in secondary box</el-radio
+                >
+              </el-col>
             </el-row>
-            <el-row>
-              <el-col :span="8">
-                <el-checkbox v-model="checked"
+            <el-row class="row-narrow">
+              <el-col :span="12">
+                <el-checkbox v-model="checked4">Ballot divert</el-checkbox>
+              </el-col>
+            </el-row>
+            <el-row class="row">
+              <el-col :span="6" class="start-space">
+                Main Box
+                <el-select v-model="mainBox" style="width: 150px" size="mini">
+                  <el-option
+                    v-for="item in mainBoxOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-col>
+              <el-col :span="6">
+                Secondary Box
+                <el-select
+                  v-model="secondarybox"
+                  style="width: 150px"
+                  size="mini"
+                >
+                  <el-option
+                    v-for="item in secondaryBoxOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-col>
+            </el-row>
+            <el-row class="row">
+              <el-col :span="6">
+                <el-checkbox v-model="checked5"
                   >Vote timeout locking</el-checkbox
                 ></el-col
               >
               <el-col :span="12">
                 Voting period
-                <span class="empty-block">**</span>
-                s
+                <!-- <span class="empty-block">**</span>
+                s -->
+                <input class="empty-block" v-model="input2" />s
               </el-col>
             </el-row>
-            <el-row>
-              <el-col :span="8">
-                <el-checkbox v-model="checked"
-                  >Pre-vote before official vote</el-checkbox
+            <el-row class="row"
+              >Ballot recognition threshld
+              <!-- <span class="empty-block">**</span> % -->
+              <input class="empty-block" v-model="input3" />%
+            </el-row>
+            <el-row class="row">
+              <el-col :span="6">
+                <el-checkbox v-model="checked6"
+                  >Pre-vote before the official vote</el-checkbox
                 ></el-col
               >
               <el-col :span="12">
-                Voting period
-                <span class="empty-block">**</span>
-                s
+                Votes
+                <!-- <span class="empty-block">**</span> -->
+                <input class="empty-block" v-model="input4" />
               </el-col>
             </el-row>
           </div>
@@ -268,8 +271,9 @@
 
 <script>
 import { getGeographyList } from "../../../api/geography.js";
-import { getRoleList, addUser } from "@/api/user";
+import { getUserList } from "@/api/user";
 import { handleTree } from "@/utils/ruoyi";
+import { addEquipment, editEquipment } from "../../../api/equipment.js";
 
 export default {
   //   components: {
@@ -278,6 +282,7 @@ export default {
   //   },
   data() {
     return {
+      isEdit: false,
       filterText: "",
       treeData: [],
       defaultProps: {
@@ -285,59 +290,30 @@ export default {
         label: "districtName",
       },
       formInline: {
-        userName: "",
-        Password: "",
-        fullName: "",
-        gender: "",
-        userType: "",
-        roleIds: [],
-        position: "",
-        jurisdictionId: "",
-        phoneNumber: "",
-        digitalCertificates: "",
-        status: 0,
+        ballotType: "1",
+        deviceType: "VRVM",
+        deviceId: "A001",
+        jurisdiction: "1 st Precinct; 0001A",
+        location: "laboris",
+        userId: "110,111",
+        use: "Voting",
       },
       rules: {
-        userName: [
+        deviceType: [
           {
             required: true,
-            message: "please input user name",
-            trigger: "blur",
-          },
-          // { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
-        ],
-        password: [
-          { required: true, message: "please input password", trigger: "blur" },
-        ],
-        fullName: [
-          {
-            required: true,
-            message: "please input full name",
-            trigger: "blur",
-          },
-        ],
-        userType: [
-          {
-            required: true,
-            message: "please choose user type",
+            message: "please choose device type",
             trigger: "change",
           },
         ],
-        roleIds: [
+        deviceId: [
           {
             required: true,
-            message: "please set authority",
+            message: "please input device ID",
             trigger: "change",
           },
         ],
-        position: [
-          {
-            required: true,
-            message: "please input position",
-            trigger: "blur",
-          },
-        ],
-        jurisdictionId: [
+        jurisdiction: [
           {
             required: true,
             message: "please click the jurisdiction ",
@@ -348,63 +324,85 @@ export default {
       geographyList: [],
       deviceTypeOptions: [
         {
-          label: "System User",
-          value: 1,
+          label: "VRVM",
+          value: "VRVM",
         },
         {
-          label: "Equipment User",
-          value: 2,
+          label: "EVM",
+          value: "EVM",
+        },
+        {
+          label: "PCOS",
+          value: "PCOS",
+        },
+        {
+          label: "CCOS",
+          value: "CCOS",
         },
       ],
-      useOptions: [],
-      ballotTypeOptions: [],
+      useOptions: [
+        {
+          label: "Registration",
+          value: "Registration",
+        },
+        {
+          label: "Verification",
+          value: "Verification",
+        },
+        {
+          label: "Voting",
+          value: "Voting",
+        },
+        {
+          label: "Counting",
+          value: "Counting",
+        },
+      ],
+      ballotTypeOptions: [
+        {
+          label: "Paper ballot",
+          value: "1",
+        },
+        {
+          label: "Enectronic ballot",
+          value: "0",
+        },
+      ],
+      users: [],
+      selectedUserList: [],
       systemUserAuthorityList: [],
       equipmentUserAuthorityList: [],
       authorityOptions: [],
+      checked1: true,
+      checked2: true,
+      checked3: true,
+      checked4: true,
+      checked5: true,
+      checked6: false,
+      input1: "20",
+      input2: "20",
+      input3: "20",
+      input4: "10",
+      radio: "1",
+      mainBox: "Overvote",
+      mainBoxOptions: [
+        { label: "Overvote", value: "Overvote" },
+        { label: "Undervote", value: "Undervote" },
+        { label: "Misread", value: "Misread" },
+        { label: "Rejected", value: "Rejected" },
+        { label: "Previously scanned", value: "Previously scanned" },
+      ],
+      secondarybox: "Undervote",
+      secondaryBoxOptions: [
+        { label: "Overvote", value: "Overvote" },
+        { label: "Undervote", value: "Undervote" },
+        { label: "Misread", value: "Misread" },
+        { label: "Rejected", value: "Rejected" },
+        { label: "Previously scanned", value: "Previously scanned" },
+      ],
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
-  watch: {
-    //观察
-    //   $route: "routeHandle",
-    "formInline.userType": {
-      handler(nv) {
-        this.authorityOptions = [];
-        this.$set(this.formInline, "roleIds", []);
-        // this.formInline.roleIds = "";
-        if (nv == 1) {
-          this.systemUserAuthorityList.map((item) => {
-            this.authorityOptions.push({
-              label: item.roleName,
-              value: item.roleId,
-            });
-          });
-        } else if (nv == 2) {
-          this.equipmentUserAuthorityList.map((item) => {
-            this.authorityOptions.push({
-              label: item.roleName,
-              value: item.roleId,
-            });
-          });
-        }
-        console.log("this.authorityOptions", this.authorityOptions);
-      },
-    },
-    filterText(val) {
-      this.$refs.tree.filter(val);
-    },
-  },
+
   methods: {
     getGeographyList() {
       getGeographyList().then((res) => {
@@ -416,24 +414,28 @@ export default {
         }
       });
     },
-    //获取authority菜单
-    getRoleList() {
-      getRoleList({
-        roleType: 1,
-      }).then((res) => {
-        console.log(res);
+    //获取当前可选用户
+    getUserList() {
+      let query = {
+        userType: 2,
+      };
+      getUserList(query).then((res) => {
         if (res.code == 200) {
-          this.systemUserAuthorityList = res.rows;
+          console.log("res.rows**", res.rows);
+          //如果是新建，默认选中用户为第一个
+          this.users = res.rows;
+          if (!this.isEdit) this.selectedUserList = [this.users[0].userName];
         }
       });
-      getRoleList({
-        roleType: 2,
-      }).then((res) => {
-        console.log(res);
-        if (res.code == 200) {
-          this.equipmentUserAuthorityList = res.rows;
-        }
-      });
+    },
+    handleCheckedUsersChange(val) {
+      // console.log("val", val);
+    },
+
+    //删除用户的绑定关系
+    handleClose(val) {
+      // console.log("val", val); //用户名User1
+      this.selectedUserList.splice(this.selectedUserList.indexOf(val), 1);
     },
     filterNode(value, data) {
       if (!value) return true;
@@ -441,10 +443,9 @@ export default {
     },
     handleNodeClick(data) {
       console.log("data", data);
-      // districtName id
       this.$set(
         this.formInline,
-        "jurisdictionId",
+        "jurisdiction",
         `${data.districtName} , ${data.id}`
       );
     },
@@ -457,19 +458,8 @@ export default {
         })
         .then(() => {
           console.log("this.formInline", this.formInline);
-          this.formInline = {
-            userName: "",
-            Password: "",
-            fullName: "",
-            gender: "",
-            userType: "",
-            roleIds: [],
-            position: "",
-            jurisdictionId: "",
-            phoneNumber: "",
-            digitalCertificates: "",
-            status: 0,
-          };
+          this.formInline = {};
+          this.selectedUserList = [];
         });
     },
     saveForm() {
@@ -480,26 +470,55 @@ export default {
           );
         }
       });
-      console.log("this.formInline", this.formInline);
-      addUser(this.formInline).then((res) => {
-        console.log("res", res);
-        if (res.code == 200) {
-          this.$router.push({ path: "/SystemAdministration" });
-        }
+      //获取选中userId，组合成"userId": "110,111",
+      let userId = "";
+      this.selectedUserList.map((uName) => {
+        this.users.map((user) => {
+          if (user.userName == uName) {
+            userId += user.userId + ", ";
+          }
+        });
       });
+      this.formInline.userId = userId;
+      console.log("this.formInline", this.formInline);
+
+      if (this.isEdit) {
+        editEquipment(this.formInline).then((res) => {
+          console.log("edit res", res);
+          if (res.code == 200) {
+            this.$router.push({ path: "/EquipmentManagement" });
+          }
+        });
+      } else {
+        addEquipment(this.formInline).then((res) => {
+          console.log("add new res", res);
+          if (res.code == 200) {
+            this.$router.push({ path: "/EquipmentManagement" });
+          }
+        });
+      }
     },
-    changeStatus() {
-      this.$set(this.formInline, "status", this.formInline.status == 0 ? 1 : 0);
-    },
-    toAddDigital() {},
   },
-  created() {
+  async created() {
     this.getGeographyList();
-    this.getRoleList();
+    await this.getUserList();
   },
   mounted() {
     this.$nextTick(function () {
       // Code that will run only after the entire view has been rendered
+      console.log("this.$route", this.$route.query);
+      if (this.$route.query.id && this.$route.query.id !== null) {
+        this.isEdit = true;
+        this.formInline = this.$route.query;
+        let { sysUserList } = this.$route.query;
+        console.log("sysUserList", sysUserList);
+        this.selectedUserList = sysUserList.map((equip) => {
+          return equip.userName;
+        });
+      } else {
+        this.isEdit = false;
+      }
+      console.log("this.isEdit", this.isEdit);
     });
   },
 };
@@ -530,14 +549,60 @@ export default {
       padding-bottom: 20px;
     }
     .middle {
-      height: 160px;
+      height: 140px;
       // border: #5a9cf8 1px solid;
       padding-bottom: 20px;
       overflow: auto;
+
+      .user-list {
+        height: calc(100% - 40px);
+        overflow: auto;
+      }
+      .add {
+        color: #409eff;
+        cursor: pointer;
+      }
+      .el-tag + .el-tag {
+        margin-left: 30px;
+      }
+      .button-new-tag {
+        margin-left: 10px;
+        height: 32px;
+        line-height: 30px;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+      .input-new-tag {
+        width: 90px;
+        margin-left: 10px;
+        vertical-align: bottom;
+      }
     }
     .bottom {
-      height: 400px;
-      border: #5a9cf8 1px solid;
+      height: 420px;
+      // border: #5a9cf8 1px solid;
+      .extra-info {
+        padding: 0 30px;
+        .empty-block {
+          border: #5a9cf8 1px solid;
+          width: 30px;
+          height: 25px;
+          margin-right: 5px;
+        }
+        .count {
+          height: 15px;
+          // width: 30px;
+        }
+        .row-narrow {
+          height: 30px;
+        }
+        .row {
+          height: 42px;
+        }
+        .start-space {
+          margin-left: 30px;
+        }
+      }
     }
     .title-box {
       display: flex;
@@ -554,18 +619,7 @@ export default {
       .op {
       }
     }
-    .extra-info {
-      padding: 0 30px;
-      .empty-block {
-        border: #5a9cf8 1px solid;
-        width: 10px;
-        height: 10px;
-      }
-    }
-    .count {
-      height: 15px;
-      // width: 30px;
-    }
+
     .form-button {
       display: flex;
       justify-content: center;

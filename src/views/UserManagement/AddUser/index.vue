@@ -1,16 +1,6 @@
 <template>
   <div class="test">
     <div class="princict-tree">
-      <!-- <div class="filter">
-        <el-input
-          placeholder=""
-          v-model="filterText"
-          clearable
-          suffix-icon="el-icon-search"
-        >
-        </el-input>
-      </div> -->
-
       <el-tree
         class="filter-tree"
         :data="treeData"
@@ -256,47 +246,32 @@ export default {
       authorityOptions: [],
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
   watch: {
     //观察
     //   $route: "routeHandle",
-    "formInline.userType": {
-      handler(nv) {
-        this.authorityOptions = [];
-        this.$set(this.formInline, "roleIds", []);
-        // this.formInline.roleIds = "";
-        if (nv == 1) {
-          this.systemUserAuthorityList.map((item) => {
-            this.authorityOptions.push({
-              label: item.roleName,
-              value: item.roleId,
-            });
-          });
-        } else if (nv == 2) {
-          this.equipmentUserAuthorityList.map((item) => {
-            this.authorityOptions.push({
-              label: item.roleName,
-              value: item.roleId,
-            });
-          });
-        }
-        console.log("this.authorityOptions", this.authorityOptions);
-      },
-    },
-    filterText(val) {
-      this.$refs.tree.filter(val);
-    },
+    // "formInline.userType": {
+    //   handler(nv) {
+    //     this.authorityOptions = [];
+    //     this.$set(this.formInline, "roleIds", []);
+    //     // this.formInline.roleIds = "";
+    //     if (nv == 1) {
+    //       this.systemUserAuthorityList.map((item) => {
+    //         this.authorityOptions.push({
+    //           label: item.roleName,
+    //           value: item.roleId,
+    //         });
+    //       });
+    //     } else if (nv == 2) {
+    //       this.equipmentUserAuthorityList.map((item) => {
+    //         this.authorityOptions.push({
+    //           label: item.roleName,
+    //           value: item.roleId,
+    //         });
+    //       });
+    //     }
+    //     console.log("this.authorityOptions", this.authorityOptions);
+    //   },
+    // },
   },
   methods: {
     getGeographyList() {

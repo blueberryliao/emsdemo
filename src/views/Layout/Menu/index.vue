@@ -12,6 +12,7 @@
           :index="item.path"
           :disabled="!item.isDeveloped"
           v-if="item.children"
+          :class="$route.name === item.path ? 'is-active' : ''"
         >
           <template slot="title">
             <i :class="item.meta.icon" @click="clickMenu(item.path)"></i>
@@ -24,6 +25,7 @@
               :index="i.path"
               :disabled="!i.isDeveloped"
               @click="clickMenu(i.path)"
+              :class="$route.name === i.path ? 'is-active' : ''"
               >{{ i.meta.title }}</el-menu-item
             >
           </div>
