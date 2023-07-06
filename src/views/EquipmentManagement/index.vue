@@ -169,7 +169,7 @@
         </el-table-column>
         <el-table-column
           fixed="right"
-          label="Operation"
+          label="Edit"
           align="center"
           :show-overflow-tooltip="true"
           min-width="5%"

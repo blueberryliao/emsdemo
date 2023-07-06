@@ -77,7 +77,11 @@
       </div>
     </div> -->
     <div class="table">
-      There is nothing here. Please click Create Event to add election event.
+      <div class="info">
+        There is nothing here. Please click <span>Create Event</span> to add
+        election event.
+      </div>
+
       <!-- <el-table
         v-loading="loading"
         :header-cell-style="{
@@ -395,6 +399,14 @@ export default {
     padding: 0 10px;
     height: calc(100% - 120px - 32px);
     overflow: auto;
+    .info {
+      padding: 20px;
+      font-size: 20px;
+      font-weight: 900;
+      span {
+        color: #5a9cf8;
+      }
+    }
     .status {
       color: #5a9cf8;
       cursor: pointer;

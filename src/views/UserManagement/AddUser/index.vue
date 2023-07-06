@@ -356,11 +356,12 @@ export default {
     width: 260px;
     height: 100%;
     border-right: 1px solid #d4d4d7;
-    padding: 10px;
+    padding: 10px 0;
     .filter {
       //   width: 90%;
     }
   }
+
   .content {
     flex: 1;
     // border: 1px solid red;
@@ -385,6 +386,9 @@ export default {
       color: #5a9cf8;
       cursor: pointer;
     }
+  }
+  ::v-deep .el-tree-node:focus > .el-tree-node__content {
+    border-right: 2px solid #3e82f4 !important;
   }
 
   ::v-deep .el-form-item .el-select {

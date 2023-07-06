@@ -1,8 +1,8 @@
 <template>
   <div class="data-center">
     <div class="tab">
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane name="first">
+      <el-tabs v-model="activeName" @tab-click="handleClick" class="el-tab">
+        <el-tab-pane name="first" class="tab-pane">
           <span slot="label"><i class="el-icon-user"></i> Voters</span>
           <Voters></Voters>
         </el-tab-pane>
@@ -63,7 +63,7 @@ export default {
   //     },
   //   },
   methods: {
-    getTableYear() {},
+    handleClick() {},
   },
   created() {},
   mounted() {
@@ -80,5 +80,21 @@ export default {
 }
 .data-center {
   padding: 10px;
+  width: 100%;
+  height: 100%;
+  .tab {
+    width: 100%;
+    height: 100%;
+    .el-tab {
+      width: 100%;
+      height: 100%;
+      .tab-pane {
+        height: 100%;
+      }
+    }
+  }
+  ::v-deep .el-tabs__content {
+    height: 100%;
+  }
 }
 </style>

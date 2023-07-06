@@ -24,6 +24,7 @@
         >
       </div>
     </div>
+    <div class="search"></div>
     <div class="table">
       <el-table
         v-loading="loading"

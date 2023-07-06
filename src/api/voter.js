@@ -12,7 +12,7 @@ export const getVoterList = (query) => {
 //删除用户
 export const deleteVoter = (id) => {
   return request({
-    url: `/system/user/${id}`,
+    url: `/system/voterManagement/${id}`,
     method: "delete",
     // data: data,
   });

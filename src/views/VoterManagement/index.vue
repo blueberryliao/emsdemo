@@ -27,7 +27,7 @@
               type="primary"
               icon="el-icon-circle-plus-outline"
               size="small"
-              @click="toAdd"
+              disabled
               >Add</el-button
             >
             <el-button
@@ -40,6 +40,13 @@
           </el-button-group>
         </div>
         <div class="header-right">
+          <el-button
+            type="primary"
+            size="small"
+            icon="el-icon-download"
+            disabled
+            >Download Ballots</el-button
+          >
           <el-button type="primary" size="small" icon="el-icon-top" disabled
             >Export</el-button
           >
@@ -93,6 +100,7 @@
           ref="tableData"
           row-key="id"
           @selection-change="getCheckBoxList"
+          @row-click="more"
           stripe
           max-width="100%"
           height="100%"
@@ -102,36 +110,20 @@
             min-width="2%"
             :reserve-selection="true"
           ></el-table-column>
-          <el-table-column
-            type="index"
-            width="80px"
-            label="SN"
-            align="center"
-            :index="indexMethod"
-          >
+          <el-table-column type="index" width="80px" label="SN" align="center">
           </el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             prop="photo"
             label="Photo"
             width="80px"
             align="center"
             show-overflow-tooltip
           >
-            view
-          </el-table-column>
-          <el-table-column
-            prop="status"
-            label="Status"
-            width="100px"
-            align="center"
-          >
-            <template slot-scope="scope">
-              <span v-if="scope.row.status">
-                {{ scope.row.status }}
-              </span>
-              <span v-else> / </span>
-            </template>
-          </el-table-column>
+            <el-popover placement="right" width="80" trigger="click">
+              <img src="@/assets/img/photo.jpg" alt="" class="avatar-pic" />
+              <span class="view" slot="reference">view</span>
+            </el-popover>
+          </el-table-column> -->
           <el-table-column
             prop="fullName"
             label="Name"
@@ -141,9 +133,22 @@
           >
           </el-table-column>
           <el-table-column
+            prop="status"
+            label="Status"
+            width="80px"
+            align="center"
+          >
+            <!-- <template slot-scope="scope">
+              <span v-if="scope.row.status">
+                {{ scope.row.status }}
+              </span>
+              <span v-else> / </span>
+            </template> -->
+          </el-table-column>
+          <el-table-column
             prop="gender"
             label="Gender"
-            width="80px"
+            width="70px"
             align="center"
             show-overflow-tooltip
           >
@@ -164,7 +169,7 @@
             prop="age"
             label="Age"
             align="center"
-            width="80px"
+            width="60px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
@@ -196,12 +201,6 @@
             align="center"
             :show-overflow-tooltip="true"
           >
-            <!-- <template slot-scope="scope">
-              <span v-if="scope.row.digitalCertificate">
-                {{ scope.row.digitalCertificate }}
-              </span>
-              <span v-else> / </span>
-            </template> -->
           </el-table-column>
           <el-table-column
             prop="pollingPlace"
@@ -231,7 +230,7 @@
             prop="physicalCondition"
             label="Physical Condition"
             align="center"
-            width="120px"
+            width="90px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
@@ -257,9 +256,12 @@
             prop="status"
             align="center"
             :show-overflow-tooltip="true"
-            width="180px"
+            width="220px"
           >
             <template slot-scope="scope">
+              <!-- <span class="more" @click="more(scope.row)"
+                ><i class="el-icon-more"></i>
+              </span> -->
               <span class="operation" @click="view(scope.row)"
                 ><i class="el-icon-view"></i>
               </span>
@@ -288,7 +290,7 @@
 <script>
 import Pagination from "@/components/Pagination/index.vue";
 import { getGeographyList } from "@/api/geography.js";
-import { getVoterList } from "@/api/voter.js";
+import { getVoterList, deleteVoter } from "@/api/voter.js";
 import { handleTree } from "@/utils/ruoyi";
 
 export default {
@@ -334,16 +336,15 @@ export default {
     },
     handleNodeClick(data) {
       console.log("data", data);
-      this.jurisdiction = data.name + data.id;
+      this.jurisdiction = data.districtName + "," + data.id;
       this.handleQuery();
     },
     getVoterList() {
       this.loading = true;
       let query = {
-        // userName: this.userName,
-        // fullName: this.fullName,
-        // userType: this.type,
-        // authority: this.authority,
+        fullName: this.name,
+        documentNumber: this.documentNumber,
+        jurisdiction: this.jurisdiction,
       };
       getVoterList(query).then((res) => {
         if (res.code == 200) {
@@ -377,6 +378,11 @@ export default {
     toAdd() {
       this.$router.push({ path: "/VoterManagement/AddVoter" });
     },
+    more(row) {
+      // alert(row);
+      console.log("row", row);
+      this.$router.push({ path: "/VoterManagement/AddVoter", query: row });
+    },
     //获取选中的数据
     getCheckBoxList(val) {
       console.log(val);
@@ -384,32 +390,22 @@ export default {
       this.checkBoxList = val;
       this.checkedIds = [];
       this.checkBoxList.map((item) => {
-        this.checkedIds.push(item.userId);
+        this.checkedIds.push(item.id);
       });
     },
     //多选框的处理
-    selectable(row, index) {
-      if (row.status == 0) return false;
-      //禁用
-      else return true; //可选
-    },
+    // selectable(row, index) {
+    //   if (row.status == 0) return false;
+    //   //禁用
+    //   else return true; //可选
+    // },
     //表格连续序号
-    indexMethod(index) {
-      let curpage = this.pageNum; //单前页码，具体看组件取值
-      let limitpage = this.pageSize; //每页条数，具体是组件取值
-      return index + 1 + (curpage - 1) * limitpage;
-    },
-    changeStatus(row) {
-      console.log("row", row);
-      let data = {
-        userId: row.userId,
-        status: row.status == 0 ? 1 : 0,
-      };
-      changeStatus(data).then((res) => {
-        console.log("res", res);
-        if (res.code == 200) this.getVoterList();
-      });
-    },
+    // indexMethod(index) {
+    //   let curpage = this.pageNum; //单前页码，具体看组件取值
+    //   let limitpage = this.pageSize; //每页条数，具体是组件取值
+    //   return index + 1 + (curpage - 1) * limitpage;
+    // },
+
     /** 删除按钮操作 */
     handleDelete() {
       console.log("this.checkedIds", this.checkedIds);
@@ -420,7 +416,7 @@ export default {
           type: "warning",
         })
         .then(() => {
-          deleteUser(this.checkedIds)
+          deleteVoter(this.checkedIds)
             .then((res) => {
               if (res.code == 200) {
                 this.getVoterList();
@@ -429,25 +425,6 @@ export default {
             })
             .catch(() => {});
         });
-    },
-    //获取authority菜单
-    getRoleList() {
-      getRoleList({
-        roleType: 1,
-      }).then((res) => {
-        console.log(res);
-        if (res.code == 200) {
-          this.systemUserAuthorityList = res.rows;
-        }
-      });
-      getRoleList({
-        roleType: 2,
-      }).then((res) => {
-        console.log(res);
-        if (res.code == 200) {
-          this.equipmentUserAuthorityList = res.rows;
-        }
-      });
     },
   },
   created() {
@@ -471,7 +448,7 @@ export default {
     width: 260px;
     height: 100%;
     border-right: 1px solid #d4d4d7;
-    padding: 10px;
+    padding: 10px 0;
     .filter {
       //   width: 90%;
     }
@@ -516,13 +493,24 @@ export default {
     }
     .table {
       padding: 0 10px;
-      height: calc(100% - 120px - 32px);
+      height: calc(100% - 120px - 32px - 20px);
       width: 100%;
+      margin-bottom: 20px;
       // overflow-x: auto;
       // overflow: auto;
-      .operation {
+      .more {
         color: #5a9cf8;
         cursor: pointer;
+        margin-right: 10px;
+      }
+      .view {
+        color: #5a9cf8;
+        cursor: pointer;
+      }
+      .operation {
+        // color: #5a9cf8;
+        color: #d4d4d7;
+        cursor: not-allowed;
         margin-right: 10px;
       }
       ::v-deep .el-table--scrollable-x .el-table__body-wrapper {
@@ -536,20 +524,23 @@ export default {
       height: 32px;
     }
   }
-  // ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-  //   width: 8px; /*滚动条宽度*/
-  //   height: 8px; /*滚动条高度*/
-  // }
-  // ::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
-  //   border-radius: 10px; /*滚动条的背景区域的圆角*/
-  //   -webkit-box-shadow: inset 0 0 6px rgba(238, 238, 238, 0.3);
-  //   background-color: #eeeeee; /*滚动条的背景颜色*/
-  // }
-  // ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-  //   border-radius: 10px; /*滚动条的圆角*/
-  //   -webkit-box-shadow: inset 0 0 6px rgba(145, 143, 0143, 0.3);
-  //   background-color: rgb(145, 143, 143); /*滚动条的背景颜色*/
-  // }
+  ::v-deep .el-tree-node:focus > .el-tree-node__content {
+    border-right: 2px solid #3e82f4 !important;
+  }
+  ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+    width: 8px; /*滚动条宽度*/
+    height: 8px; /*滚动条高度*/
+  }
+  ::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
+    border-radius: 10px; /*滚动条的背景区域的圆角*/
+    -webkit-box-shadow: inset 0 0 6px rgba(238, 238, 238, 0.3);
+    background-color: #eeeeee; /*滚动条的背景颜色*/
+  }
+  ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
+    border-radius: 10px; /*滚动条的圆角*/
+    -webkit-box-shadow: inset 0 0 6px rgba(145, 143, 0143, 0.3);
+    background-color: rgb(145, 143, 143); /*滚动条的背景颜色*/
+  }
   ::v-deep .el-form-item .el-select {
     width: 100%;
   }

@@ -469,34 +469,34 @@ export default {
             "please finish the required form validation"
           );
         }
-      });
-      //获取选中userId，组合成"userId": "110,111",
-      let userId = "";
-      this.selectedUserList.map((uName) => {
-        this.users.map((user) => {
-          if (user.userName == uName) {
-            userId += user.userId + ", ";
-          }
+        //获取选中userId，组合成"userId": "110,111",
+        let userId = "";
+        this.selectedUserList.map((uName) => {
+          this.users.map((user) => {
+            if (user.userName == uName) {
+              userId += user.userId + ", ";
+            }
+          });
         });
-      });
-      this.formInline.userId = userId;
-      console.log("this.formInline", this.formInline);
+        this.formInline.userId = userId;
+        console.log("this.formInline", this.formInline);
 
-      if (this.isEdit) {
-        editEquipment(this.formInline).then((res) => {
-          console.log("edit res", res);
-          if (res.code == 200) {
-            this.$router.push({ path: "/EquipmentManagement" });
-          }
-        });
-      } else {
-        addEquipment(this.formInline).then((res) => {
-          console.log("add new res", res);
-          if (res.code == 200) {
-            this.$router.push({ path: "/EquipmentManagement" });
-          }
-        });
-      }
+        if (this.isEdit) {
+          editEquipment(this.formInline).then((res) => {
+            console.log("edit res", res);
+            if (res.code == 200) {
+              this.$router.push({ path: "/EquipmentManagement" });
+            }
+          });
+        } else {
+          addEquipment(this.formInline).then((res) => {
+            console.log("add new res", res);
+            if (res.code == 200) {
+              this.$router.push({ path: "/EquipmentManagement" });
+            }
+          });
+        }
+      });
     },
   },
   async created() {
@@ -533,7 +533,7 @@ export default {
     width: 260px;
     height: 100%;
     border-right: 1px solid #d4d4d7;
-    padding: 10px;
+    padding: 10px 0;
     .filter {
       //   width: 90%;
     }
@@ -644,6 +644,9 @@ export default {
     }
   }
 
+  ::v-deep .el-tree-node:focus > .el-tree-node__content {
+    border-right: 2px solid #3e82f4 !important;
+  }
   ::v-deep .el-form-item .el-select {
     width: 100%;
   }
