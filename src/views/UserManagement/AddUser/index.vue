@@ -246,33 +246,7 @@ export default {
       authorityOptions: [],
     };
   },
-  watch: {
-    //观察
-    //   $route: "routeHandle",
-    // "formInline.userType": {
-    //   handler(nv) {
-    //     this.authorityOptions = [];
-    //     this.$set(this.formInline, "roleIds", []);
-    //     // this.formInline.roleIds = "";
-    //     if (nv == 1) {
-    //       this.systemUserAuthorityList.map((item) => {
-    //         this.authorityOptions.push({
-    //           label: item.roleName,
-    //           value: item.roleId,
-    //         });
-    //       });
-    //     } else if (nv == 2) {
-    //       this.equipmentUserAuthorityList.map((item) => {
-    //         this.authorityOptions.push({
-    //           label: item.roleName,
-    //           value: item.roleId,
-    //         });
-    //       });
-    //     }
-    //     console.log("this.authorityOptions", this.authorityOptions);
-    //   },
-    // },
-  },
+  watch: {},
   methods: {
     getGeographyList() {
       getGeographyList().then((res) => {

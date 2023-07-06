@@ -75,9 +75,9 @@ export default {
     background-color: #e1e3e6;
   }
   .main {
-    height: calc(100vh - 60px);
-    display: flex;
+    height: calc(100% - 60px);
     width: 100%;
+    display: flex;
     background-color: #fff;
     align-items: stretch;
     .menu {
@@ -86,15 +86,11 @@ export default {
       height: 100%;
       background-color: #fff;
       border-right: 1px solid #d4d4d7;
-      // position: fixed;
-      // left: 0;
-      // top: 40px;
-      // bottom: 0;
     }
     .content {
-      flex: 1;
+      // flex: 1;
+      width: calc(100vw - 240px);
       height: 100%;
-      //   padding-left: 200px;
     }
   }
 }

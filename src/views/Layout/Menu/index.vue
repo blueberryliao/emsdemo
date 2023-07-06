@@ -16,7 +16,7 @@
         >
           <template slot="title">
             <i :class="item.meta.icon" @click="clickMenu(item.path)"></i>
-            <span slot="title" @click="clickMenu(item.path)">{{
+            <span slot="title" class="title" @click="clickMenu(item.path)">{{
               item.meta.title
             }}</span>
           </template>
@@ -105,6 +105,9 @@ export default {
   box-sizing: border-box;
 }
 .menu {
+  .title {
+    padding: 20px 0;
+  }
 }
 .el-menu {
   border-right: 0;

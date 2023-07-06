@@ -617,6 +617,8 @@ export default {
         width: 300px;
       }
       .op {
+        color: #999;
+        cursor: not-allowed;
       }
     }
 

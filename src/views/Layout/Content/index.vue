@@ -28,10 +28,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-* {
-  box-sizing: border-box;
-}
 .content {
+  width: 100%;
   .header {
     background-color: #d4d4d7;
     height: 40px;

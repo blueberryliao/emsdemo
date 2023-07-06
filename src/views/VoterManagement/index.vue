@@ -91,9 +91,11 @@
           }"
           :data="tableData"
           ref="tableData"
-          row-key="userId"
+          row-key="id"
           @selection-change="getCheckBoxList"
           stripe
+          max-width="100%"
+          height="100%"
         >
           <el-table-column
             type="selection"
@@ -102,8 +104,7 @@
           ></el-table-column>
           <el-table-column
             type="index"
-            min-width="2%"
-            width="80"
+            width="80px"
             label="SN"
             align="center"
             :index="indexMethod"
@@ -112,7 +113,7 @@
           <el-table-column
             prop="photo"
             label="Photo"
-            min-width="8%"
+            width="80px"
             align="center"
             show-overflow-tooltip
           >
@@ -121,40 +122,40 @@
           <el-table-column
             prop="status"
             label="Status"
-            min-width="8%"
+            width="100px"
             align="center"
           >
             <template slot-scope="scope">
               <span v-if="scope.row.status">
-                {{ scope.row.password }}
+                {{ scope.row.status }}
               </span>
-              <span v-else> ****** </span>
+              <span v-else> / </span>
             </template>
           </el-table-column>
           <el-table-column
-            prop="name"
+            prop="fullName"
             label="Name"
             align="left"
-            min-width="10%"
+            width="200px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
           <el-table-column
-            prop="sex"
+            prop="gender"
             label="Gender"
-            min-width="8%"
+            width="80px"
             align="center"
             show-overflow-tooltip
           >
             <template slot-scope="scope">
-              <span v-if="scope.row.sex == 0">female</span>
-              <span v-if="scope.row.sex == 1">male</span>
+              <span v-if="scope.row.gender == 0">female</span>
+              <span v-if="scope.row.gender == 1">male</span>
             </template>
           </el-table-column>
           <el-table-column
             prop="birthday"
             label="Birthday"
-            min-width="15%"
+            width="120px"
             align="center"
             show-overflow-tooltip
           >
@@ -163,22 +164,22 @@
             prop="age"
             label="Age"
             align="center"
-            min-width="10%"
+            width="80px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
           <el-table-column
-            prop="address"
+            prop="adress"
             label="Address"
             align="center"
-            min-width="10%"
+            width="180px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
           <el-table-column
-            prop="votingMethod"
+            prop="votingMeathod"
             label="Voting Method"
-            min-width="8%"
+            width="180px"
             align="center"
           >
             <!-- <template slot-scope="scope">
@@ -189,9 +190,9 @@
             </template> -->
           </el-table-column>
           <el-table-column
-            prop="jurisdicton"
+            prop="jurisdiction"
             label="Jurisdiction"
-            min-width="10%"
+            width="180px"
             align="center"
             :show-overflow-tooltip="true"
           >
@@ -206,7 +207,7 @@
             prop="pollingPlace"
             label="Polling Place"
             align="center"
-            min-width="10%"
+            width="180px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
@@ -214,7 +215,7 @@
             prop="documentType"
             label="Document Type"
             align="center"
-            min-width="10%"
+            width="180px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
@@ -222,7 +223,7 @@
             prop="documentNumber"
             label="Document Number"
             align="center"
-            min-width="10%"
+            width="180px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
@@ -230,7 +231,7 @@
             prop="physicalCondition"
             label="Physical Condition"
             align="center"
-            min-width="10%"
+            width="120px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
@@ -238,7 +239,7 @@
             prop="registrationTime"
             label="Registration Time"
             align="center"
-            min-width="10%"
+            width="180px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
@@ -246,31 +247,27 @@
             prop="verificationTime"
             label="Verification Time"
             align="center"
-            min-width="10%"
+            width="180px"
             :show-overflow-tooltip="true"
           >
           </el-table-column>
 
           <el-table-column
-            fixed="right"
             label="Ballots"
             prop="status"
             align="center"
             :show-overflow-tooltip="true"
-            min-width="5%"
+            width="180px"
           >
             <template slot-scope="scope">
-              <span
-                v-if="scope.row.status == 1"
-                class="status-lock"
-                @click="changeStatus(scope.row)"
-                ><i class="el-icon-lock"></i>
+              <span class="operation" @click="view(scope.row)"
+                ><i class="el-icon-view"></i>
               </span>
-              <span
-                v-else
-                @click="changeStatus(scope.row)"
-                class="status-unlock"
-                ><i class="el-icon-unlock"></i>
+              <span @click="download(scope.row)" class="operation"
+                ><i class="el-icon-bottom"></i>
+              </span>
+              <span @click="refresh(scope.row)" class="operation"
+                ><i class="el-icon-refresh-left"></i>
               </span>
             </template>
           </el-table-column>
@@ -303,22 +300,9 @@ export default {
         children: "children",
         label: "districtName",
       },
-      userName: "",
-      fullName: "",
-      type: "",
-      typeOptions: [
-        { label: "all", value: "" },
-        {
-          label: "System User",
-          value: 1,
-        },
-        {
-          label: "Equipment User",
-          value: 2,
-        },
-      ],
-      authority: "",
-      authorityOptions: [{ label: "all", value: "" }],
+      name: "",
+      documentNumber: "",
+      jurisdiction: "",
       tableData: [],
       loading: false,
       checkBoxList: [],
@@ -332,30 +316,7 @@ export default {
       equipmentUserAuthorityList: [],
     };
   },
-  watch: {
-    //观察
-    // $route: "routeHandle",
-    // type: {
-    //   handler(nv) {
-    //     this.authorityOptions = [{ label: "all", value: "" }];
-    //     if (nv == 1) {
-    //       this.systemUserAuthorityList.map((item) => {
-    //         this.authorityOptions.push({
-    //           label: item.roleName,
-    //           value: item.roleKey,
-    //         });
-    //       });
-    //     } else if (nv == 2) {
-    //       this.equipmentUserAuthorityList.map((item) => {
-    //         this.authorityOptions.push({
-    //           label: item.roleName,
-    //           value: item.roleKey,
-    //         });
-    //       });
-    //     }
-    //   },
-    // },
-  },
+  watch: {},
   methods: {
     getGeographyList() {
       getGeographyList().then((res) => {
@@ -373,12 +334,8 @@ export default {
     },
     handleNodeClick(data) {
       console.log("data", data);
-      // districtName id
-      this.$set(
-        this.formInline,
-        "jurisdictionId",
-        `${data.districtName} , ${data.id}`
-      );
+      this.jurisdiction = data.name + data.id;
+      this.handleQuery();
     },
     getVoterList() {
       this.loading = true;
@@ -509,7 +466,6 @@ export default {
 .voter-case {
   height: 100%;
   width: 100%;
-  padding-bottom: 20px;
   display: flex;
   .princict-tree {
     width: 260px;
@@ -522,6 +478,7 @@ export default {
   }
   .voter-list {
     width: calc(100% - 260px);
+    padding-bottom: 20px;
     .header {
       background-color: #d4d4d7;
       height: 60px;
@@ -561,34 +518,47 @@ export default {
       padding: 0 10px;
       height: calc(100% - 120px - 32px);
       width: 100%;
-      overflow-x: auto;
-      overflow: auto;
-      .status-lock {
-        color: #ae3d2e;
-        cursor: pointer;
-      }
-      .status-unlock {
+      // overflow-x: auto;
+      // overflow: auto;
+      .operation {
         color: #5a9cf8;
         cursor: pointer;
+        margin-right: 10px;
+      }
+      ::v-deep .el-table--scrollable-x .el-table__body-wrapper {
+        overflow: auto !important;
+      }
+      ::v-deep .el-table__fixed-right-patch {
+        background-color: #f5f7fa !important;
       }
     }
     .page {
       height: 32px;
     }
   }
-  ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
-    width: 8px; /*滚动条宽度*/
-    height: 8px; /*滚动条高度*/
+  // ::v-deep .el-table__body-wrapper::-webkit-scrollbar {
+  //   width: 8px; /*滚动条宽度*/
+  //   height: 8px; /*滚动条高度*/
+  // }
+  // ::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
+  //   border-radius: 10px; /*滚动条的背景区域的圆角*/
+  //   -webkit-box-shadow: inset 0 0 6px rgba(238, 238, 238, 0.3);
+  //   background-color: #eeeeee; /*滚动条的背景颜色*/
+  // }
+  // ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  //   border-radius: 10px; /*滚动条的圆角*/
+  //   -webkit-box-shadow: inset 0 0 6px rgba(145, 143, 0143, 0.3);
+  //   background-color: rgb(145, 143, 143); /*滚动条的背景颜色*/
+  // }
+  ::v-deep .el-form-item .el-select {
+    width: 100%;
   }
-  ::v-deep .el-table__body-wrapper::-webkit-scrollbar-track {
-    border-radius: 10px; /*滚动条的背景区域的圆角*/
-    -webkit-box-shadow: inset 0 0 6px rgba(238, 238, 238, 0.3);
-    background-color: #eeeeee; /*滚动条的背景颜色*/
+
+  ::v-deep .el-row {
+    margin-bottom: 30px;
   }
-  ::v-deep .el-table__body-wrapper::-webkit-scrollbar-thumb {
-    border-radius: 10px; /*滚动条的圆角*/
-    -webkit-box-shadow: inset 0 0 6px rgba(145, 143, 0143, 0.3);
-    background-color: rgb(145, 143, 143); /*滚动条的背景颜色*/
+  ::v-deep .el-tree-node__content {
+    height: 40px;
   }
 }
 </style>

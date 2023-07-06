@@ -315,7 +315,7 @@ export default {
     //   console.log(`当前页: ${val}`);
     // },
     toAdd() {
-      // this.$router.push({ path: "/SystemAdministration/User" });
+      this.$router.push({ path: "/ElectionConfiguration/ElectionEvents" });
     },
     //获取选中的数据
     getCheckBoxList(val) {
