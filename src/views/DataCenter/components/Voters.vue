@@ -327,8 +327,8 @@ export default {
     },
   },
   created() {
-    this.getUserList();
-    this.getRoleList();
+    // this.getUserList();
+    // this.getRoleList();
   },
   mounted() {
     this.$nextTick(function () {
