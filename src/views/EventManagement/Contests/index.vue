@@ -70,20 +70,6 @@
         @selection-change="getCheckBoxList"
         stripe
       >
-        <!-- <el-table-column
-          type="selection"
-          min-width="2%"
-          :reserve-selection="true"
-        ></el-table-column> -->
-        <!-- <el-table-column
-          type="index"
-          min-width="2%"
-          width="80"
-          label="SN"
-          align="center"
-          :index="indexMethod"
-        >
-        </el-table-column> -->
         <el-table-column
           prop="userName"
           label="Election Event"
@@ -98,12 +84,6 @@
           min-width="8%"
           align="center"
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.password">
-              {{ scope.row.password }}
-            </span>
-            <span v-else> ****** </span>
-          </template> -->
         </el-table-column>
         <el-table-column
           prop="fullName"
@@ -125,10 +105,6 @@
           align="center"
           show-overflow-tooltip
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.sex == 0">female</span>
-            <span v-if="scope.row.sex == 1">male</span>
-          </template> -->
         </el-table-column>
         <el-table-column
           prop="roleName"
@@ -137,10 +113,6 @@
           align="center"
           show-overflow-tooltip
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.authority == 0">female</span>
-            <span v-if="scope.row.authority == 1">male</span>
-          </template> -->
         </el-table-column>
         <el-table-column
           prop="roleName"
@@ -149,10 +121,6 @@
           align="center"
           show-overflow-tooltip
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.authority == 0">female</span>
-            <span v-if="scope.row.authority == 1">male</span>
-          </template> -->
         </el-table-column>
 
         <el-table-column

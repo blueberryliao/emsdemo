@@ -420,6 +420,8 @@ export default {
     handleDelete() {
       console.log("this.checkedIds", this.checkedIds);
       // this.$modal.confirm(`Are you sure you want to delete?`);
+      if (this.checkedIds.length == 0)
+        return this.$message.info("please select from the list");
       this.$msgbox
         .confirm(`Are you sure you want to delete?`, "System Info", {
           confirmButtonText: "Confirm",

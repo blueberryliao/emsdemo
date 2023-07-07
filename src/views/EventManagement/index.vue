@@ -2,10 +2,6 @@
   <div class="event">
     <div class="header">
       <div class="header-left">
-        <!-- <el-button-group> -->
-        <!-- <el-button type="primary" icon="el-icon-bottom" size="small"
-            >Import</el-button
-          > -->
         <el-button
           type="primary"
           icon="el-icon-circle-plus-outline"

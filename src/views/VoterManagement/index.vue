@@ -409,6 +409,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete() {
       console.log("this.checkedIds", this.checkedIds);
+      if (this.checkedIds.length == 0)
+        return this.$message.info("please select from the list");
       this.$msgbox
         .confirm(`Are you sure you want to delete?`, "System Info", {
           confirmButtonText: "Confirm",

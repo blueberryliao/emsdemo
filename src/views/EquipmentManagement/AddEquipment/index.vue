@@ -138,13 +138,8 @@
                 </el-checkbox-group>
                 <i class="el-icon-circle-plus-outline add" slot="reference"></i>
               </el-popover>
-              <!-- <el-popover
-                placement="right"
-                width="600"
-                trigger="click"
-                v-if="(users.length = 0)"
-              > -->
-              <span class="no-user">
+
+              <span class="no-user" v-else>
                 No user was authorized to operate this equipment. Please
                 <span class="add-user" @click="goToAddUser"> Add User </span>
                 first.
@@ -448,7 +443,8 @@ export default {
           res.rows.map((item) => {
             this.deviceTypeOptions.push({
               label: item.roleName.split(" ")[0],
-              value: item.roleKey,
+              // value: item.roleKey,
+              value: item.roleName.split(" ")[0],
             });
           });
           this.formInline.deviceType = this.deviceTypeOptions[0].value;
