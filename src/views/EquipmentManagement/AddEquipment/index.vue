@@ -43,7 +43,11 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="Device Type" prop="deviceType">
-                <el-select v-model="formInline.deviceType" style="width: 300px">
+                <el-select
+                  v-model="formInline.deviceType"
+                  style="width: 300px"
+                  @change="deviceTypeChange"
+                >
                   <el-option
                     v-for="item in deviceTypeOptions"
                     :key="item.value"
@@ -115,22 +119,39 @@
           <div class="title-box">
             <div class="title">
               Authorized User
-              <el-popover placement="right" width="400" trigger="click">
+              <el-popover
+                placement="right"
+                width="400"
+                trigger="click"
+                v-if="users.length > 0"
+              >
                 <el-checkbox-group
                   v-model="selectedUserList"
                   @change="handleCheckedUsersChange()"
                 >
-                  <div>
-                    <el-checkbox
-                      v-for="user in users"
-                      :label="user.userName"
-                      :key="user.userId"
-                      >{{ user.userName }}</el-checkbox
-                    >
-                  </div>
+                  <el-checkbox
+                    v-for="user in users"
+                    :label="user.userName"
+                    :key="user.userId"
+                    >{{ user.userName }}</el-checkbox
+                  >
                 </el-checkbox-group>
                 <i class="el-icon-circle-plus-outline add" slot="reference"></i>
               </el-popover>
+              <!-- <el-popover
+                placement="right"
+                width="600"
+                trigger="click"
+                v-if="(users.length = 0)"
+              > -->
+              <span class="no-user">
+                No user was authorized to operate this equipment. Please
+                <span class="add-user" @click="goToAddUser"> Add User </span>
+                first.
+              </span>
+
+              <!-- <i class="el-icon-circle-plus-outline add" slot="reference"></i> -->
+              <!-- </el-popover> -->
             </div>
 
             <div class="op"></div>
@@ -270,10 +291,10 @@
 </template>
 
 <script>
-import { getGeographyList } from "../../../api/geography.js";
-import { getUserList } from "@/api/user";
+import { getGeographyList } from "@/api/geography.js";
+import { getUserList, getRoleList } from "@/api/user";
 import { handleTree } from "@/utils/ruoyi";
-import { addEquipment, editEquipment } from "../../../api/equipment.js";
+import { addEquipment, editEquipment } from "@/api/equipment.js";
 
 export default {
   //   components: {
@@ -291,11 +312,11 @@ export default {
       },
       formInline: {
         ballotType: "1",
-        deviceType: "VRVM",
-        deviceId: "A001",
-        jurisdiction: "1 st Precinct; 0001A",
-        location: "laboris",
-        userId: "110,111",
+        deviceType: "",
+        deviceId: "",
+        jurisdiction: "",
+        location: "",
+        userId: "",
         use: "Voting",
       },
       rules: {
@@ -322,24 +343,7 @@ export default {
         ],
       },
       geographyList: [],
-      deviceTypeOptions: [
-        {
-          label: "VRVM",
-          value: "VRVM",
-        },
-        {
-          label: "EVM",
-          value: "EVM",
-        },
-        {
-          label: "PCOS",
-          value: "PCOS",
-        },
-        {
-          label: "CCOS",
-          value: "CCOS",
-        },
-      ],
+      deviceTypeOptions: [],
       useOptions: [
         {
           label: "Registration",
@@ -418,13 +422,16 @@ export default {
     getUserList() {
       let query = {
         userType: 2,
+        authority: this.formInline.deviceType,
       };
-      getUserList(query).then((res) => {
+      return getUserList(query).then((res) => {
         if (res.code == 200) {
-          console.log("res.rows**", res.rows);
+          console.log("res.users**", res.rows);
           //如果是新建，默认选中用户为第一个
-          this.users = res.rows;
-          if (!this.isEdit) this.selectedUserList = [this.users[0].userName];
+          if (res.rows.length > 0) {
+            this.users = res.rows;
+            if (!this.isEdit) this.selectedUserList = [this.users[0].userName];
+          }
         }
       });
     },
@@ -432,6 +439,31 @@ export default {
       // console.log("val", val);
     },
 
+    getDeviceOption() {
+      return getRoleList({
+        roleType: 2,
+      }).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          res.rows.map((item) => {
+            this.deviceTypeOptions.push({
+              label: item.roleName.split(" ")[0],
+              value: item.roleKey,
+            });
+          });
+          this.formInline.deviceType = this.deviceTypeOptions[0].value;
+        }
+      });
+    },
+    deviceTypeChange() {
+      this.users = [];
+      this.selectedUserList = [];
+      this.getUserList();
+    },
+
+    goToAddUser() {
+      this.$router.push({ path: "/SystemAdministration/User" });
+    },
     //删除用户的绑定关系
     handleClose(val) {
       // console.log("val", val); //用户名User1
@@ -500,7 +532,8 @@ export default {
     },
   },
   async created() {
-    this.getGeographyList();
+    await this.getGeographyList();
+    await this.getDeviceOption();
     await this.getUserList();
   },
   mounted() {
@@ -615,6 +648,21 @@ export default {
         font-size: 18px;
         font-weight: bold;
         width: 300px;
+        position: relative;
+      }
+      .no-user {
+        position: absolute;
+        width: 600px;
+        font-size: 14px;
+        left: 200px;
+        top: 2px;
+        color: #999;
+        .add-user {
+          font-size: 14px;
+          color: #5a9cf8;
+          cursor: pointer;
+          text-decoration: underline;
+        }
       }
       .op {
         color: #999;

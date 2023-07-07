@@ -421,6 +421,9 @@ export default {
               if (res.code == 200) {
                 this.getVoterList();
                 this.$message.success("deleted successfully");
+                this.$refs.tableData.clearSelection();
+                this.checkBoxList = [];
+                this.checkedIds = [];
               }
             })
             .catch(() => {});

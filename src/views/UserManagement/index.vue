@@ -266,8 +266,7 @@
 </template>
 
 <script>
-import { getUserList, changeStatus } from "@/api/user";
-import { getRoleList, deleteUser } from "@/api/user";
+import { getUserList, changeStatus, getRoleList, deleteUser } from "@/api/user";
 import Pagination from "../../components/Pagination/index.vue";
 
 export default {
@@ -433,6 +432,9 @@ export default {
               if (res.code == 200) {
                 this.getUserList();
                 this.$message.success("deleted successfully");
+                this.$refs.tableData.clearSelection();
+                this.checkBoxList = [];
+                this.checkedIds = [];
               }
             })
             .catch(() => {});

@@ -51,8 +51,8 @@
           <el-col :span="12">
             <el-form-item label="Gender" prop="gender">
               <el-select v-model="formInline.gender" style="width: 300px">
-                <el-option label="male" value="0"></el-option>
-                <el-option label="female" value="1"></el-option>
+                <el-option label="male" value="1"></el-option>
+                <el-option label="female" value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -77,6 +77,7 @@
                 v-model="formInline.roleIds"
                 multiple
                 style="width: 300px"
+                @change="printAuthority"
               >
                 <el-option
                   v-for="item in authorityOptions"
@@ -171,7 +172,7 @@ export default {
       },
       formInline: {
         userName: "",
-        Password: "",
+        password: "",
         fullName: "",
         gender: "",
         userType: "",
@@ -246,10 +247,35 @@ export default {
       authorityOptions: [],
     };
   },
-  watch: {},
+  watch: {
+    "formInline.userType": {
+      handler(nv) {
+        this.getAuthority(nv);
+      },
+    },
+  },
   methods: {
+    printAuthority() {
+      console.log(this.formInline);
+    },
+    initForm() {
+      this.formInline = {
+        userName: "",
+        password: "",
+        fullName: "",
+        gender: "1",
+        userType: 1,
+        roleIds: [],
+        position: "",
+        jurisdictionId: "",
+        phoneNumber: "",
+        digitalCertificates: "",
+        status: 0,
+      };
+      this.getAuthority(1);
+    },
     getGeographyList() {
-      getGeographyList().then((res) => {
+      return getGeographyList().then((res) => {
         console.log("res", res);
         if (res.code == 200) {
           this.geographyList = res.data;
@@ -259,8 +285,28 @@ export default {
       });
     },
     //获取authority菜单
-    getRoleList() {
-      getRoleList({
+    getAuthority(nv) {
+      this.authorityOptions = [];
+      if (nv == 1) {
+        this.systemUserAuthorityList.map((item) => {
+          this.authorityOptions.push({
+            label: item.roleName,
+            value: item.roleId,
+          });
+        });
+      } else if (nv == 2) {
+        this.equipmentUserAuthorityList.map((item) => {
+          this.authorityOptions.push({
+            label: item.roleName,
+            value: item.roleId,
+          });
+        });
+      }
+      this.formInline.roleIds = [this.authorityOptions[0].value];
+      console.log("this.authorityOptions", this.authorityOptions);
+    },
+    getSystemUserAuthorityList() {
+      return getRoleList({
         roleType: 1,
       }).then((res) => {
         console.log(res);
@@ -268,7 +314,9 @@ export default {
           this.systemUserAuthorityList = res.rows;
         }
       });
-      getRoleList({
+    },
+    getEquipmentUserAuthorityList() {
+      return getRoleList({
         roleType: 2,
       }).then((res) => {
         console.log(res);
@@ -299,19 +347,7 @@ export default {
         })
         .then(() => {
           console.log("this.formInline", this.formInline);
-          this.formInline = {
-            userName: "",
-            Password: "",
-            fullName: "",
-            gender: "",
-            userType: "",
-            roleIds: [],
-            position: "",
-            jurisdictionId: "",
-            phoneNumber: "",
-            digitalCertificates: "",
-            status: 0,
-          };
+          this.initForm();
         });
     },
     saveForm() {
@@ -335,14 +371,14 @@ export default {
     },
     toAddDigital() {},
   },
-  created() {
-    this.getGeographyList();
-    this.getRoleList();
+  async created() {
+    await this.getGeographyList();
+    await this.getSystemUserAuthorityList();
+    await this.getEquipmentUserAuthorityList();
+    this.initForm();
   },
   mounted() {
-    this.$nextTick(function () {
-      // Code that will run only after the entire view has been rendered
-    });
+    this.$nextTick(function () {});
   },
 };
 </script>

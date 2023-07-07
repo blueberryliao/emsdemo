@@ -3,12 +3,6 @@
     <div class="citizenship">
       <div class="left">
         <div class="title">Citizenship</div>
-        <!-- <el-avatar
-          shape="square"
-          fit="contain"
-          src="../../../assets/img/loginlogo.jpg"
-          class="avatar-pic"
-        ></el-avatar> -->
         <img :src="baseurl + info.voterPhotoUrl" alt="" class="avatar-pic" />
       </div>
       <div class="right">
@@ -120,9 +114,6 @@
 </template>
 
 <script>
-// import Request from "@/common/net/request.js";
-// import Tab from "@/components/Tab/tabIncome.vue";
-// const request = new Request();
 export default {
   //   components: {
   //     //导入的组件

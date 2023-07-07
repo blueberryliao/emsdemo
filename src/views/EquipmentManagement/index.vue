@@ -255,18 +255,7 @@ export default {
       equipmentUserAuthorityList: [],
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
+
   watch: {
     //观察
     // $route: "routeHandle",
@@ -302,20 +291,9 @@ export default {
         this.getEquipmentList();
       }, 300);
     },
-    // handleSizeChange(val) {
-    //   console.log(`每页 ${val} 条`);
-    // },
-    // handleCurrentChange(val) {
-    //   console.log(`当前页: ${val}`);
-    // },
+
     toEdit(row) {
       console.log("row", row);
-      // // 会调用两遍，一次tagName是INPUT,一次是SPAN,阻止一次，否则会调用两次
-      // if (event.target.tagName === 'INPUT') {
-      //      return;
-      //  }
-      //  this.init(); // 调用接口刷新页面
-
       this.$router.push({ path: "/EquipmentManagement/Add", query: row });
     },
     toAdd() {
@@ -331,12 +309,7 @@ export default {
         this.checkedIds.push(item.id);
       });
     },
-    //多选框的处理
-    selectable(row, index) {
-      if (row.status == 0) return false;
-      //禁用
-      else return true; //可选
-    },
+
     //表格连续序号
     indexMethod(index) {
       let curpage = this.pageNum; //单前页码，具体看组件取值
@@ -370,6 +343,9 @@ export default {
               if (res.code == 200) {
                 this.getEquipmentList();
                 this.$message.success("deleted successfully");
+                this.$refs.tableData.clearSelection();
+                this.checkBoxList = [];
+                this.checkedIds = [];
               }
             })
             .catch(() => {});

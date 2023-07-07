@@ -6,15 +6,15 @@
           <span slot="label"><i class="el-icon-user"></i> Voters</span>
           <Voters></Voters>
         </el-tab-pane>
-        <el-tab-pane name="second">
+        <el-tab-pane name="second" class="tab-pane">
           <span slot="label"><i class="el-icon-s-ticket"></i> Ballots</span>
           <Ballots></Ballots>
         </el-tab-pane>
-        <el-tab-pane name="third">
+        <el-tab-pane name="third" class="tab-pane">
           <span slot="label"><i class="el-icon-s-custom"></i> Candidates</span>
           <Candidates></Candidates>
         </el-tab-pane>
-        <el-tab-pane name="fourth">
+        <el-tab-pane name="fourth" class="tab-pane">
           <span slot="label" name="third"
             ><i class="el-icon-s-data"></i> Results</span
           >
