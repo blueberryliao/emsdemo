@@ -72,16 +72,11 @@
         }"
         :data="tableData"
         style="width: 100%"
+        height="100%"
         ref="tableData"
         row-key="userId"
-        @selection-change="getCheckBoxList"
         stripe
       >
-        <!-- <el-table-column
-          type="selection"
-          min-width="2%"
-          :reserve-selection="true"
-        ></el-table-column> -->
         <el-table-column
           type="index"
           min-width="2%"
@@ -92,15 +87,15 @@
         >
         </el-table-column>
         <el-table-column
-          prop="Name"
-          label="Election Event"
+          prop="name"
+          label="Name"
           min-width="8%"
           align="center"
           show-overflow-tooltip
         >
         </el-table-column>
         <el-table-column
-          prop="password"
+          prop="gender"
           label="Gender"
           min-width="8%"
           align="center"
@@ -113,20 +108,20 @@
           </template> -->
         </el-table-column>
         <el-table-column
-          prop="fullName"
+          prop="electionEvent"
           label="Election Event"
           align="left"
           min-width="20%"
           :show-overflow-tooltip="true"
         >
-          <template slot-scope="scope">
+          <!-- <template slot-scope="scope">
             <span>
               {{ scope.row.fullName }}
             </span>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column
-          prop="sex"
+          prop="electivePosition"
           label="Elective Position"
           min-width="8%"
           align="center"
@@ -138,7 +133,7 @@
           </template> -->
         </el-table-column>
         <el-table-column
-          prop="CandidatesOrder"
+          prop="candidatesOrder"
           label="Candidates Order"
           min-width="15%"
           align="center"
@@ -150,7 +145,7 @@
           </template> -->
         </el-table-column>
         <el-table-column
-          prop="roleName"
+          prop="politicalParty"
           label="Political Party"
           min-width="8%"
           align="center"
@@ -163,7 +158,7 @@
         </el-table-column>
 
         <el-table-column
-          prop="roleName"
+          prop="jurisdiction"
           label="Jurisdiction"
           min-width="10%"
           align="center"
@@ -201,7 +196,7 @@
         :total="total"
         :page.sync="pageNum"
         :limit.sync="pageSize"
-        @pagination="getGeographyList"
+        @pagination="getCandidateList"
       ></Pagination>
     </div>
   </div>
@@ -209,7 +204,7 @@
 
 <script>
 import Pagination from "@/components/Pagination/index.vue";
-import { getGeographyList } from "@/api/geography.js";
+import { getCandidateList } from "@/api/contest.js";
 export default {
   components: { Pagination },
   //   components: {
@@ -237,8 +232,8 @@ export default {
       party: "",
       partyOptions: [
         { label: "all", value: "" },
-        { label: "party1", value: "1" },
-        { label: "party2", value: "2" },
+        { label: "Democratic Party", value: "democraticParty" },
+        { label: "Republican Party", value: "republicanParty" },
       ],
       tableData: [],
       loading: false,
@@ -267,13 +262,18 @@ export default {
   //   },
   watch: {},
   methods: {
-    getGeographyList() {
-      getGeographyList().then((res) => {
+    getCandidateList() {
+      this.loading = true;
+      let query = {
+        electivePosition: this.position,
+        politicalParty: this.party,
+      };
+      getCandidateList(query).then((res) => {
         console.log("res", res);
         if (res.code == 200) {
-          this.geographyList = res.data;
-          // this.treeData = handleTree(this.geographyList);
-          // console.log("tree", this.treeData);
+          this.tableData = res.rows;
+          this.total = res.total;
+          this.loading = false;
         }
       });
     },
@@ -282,7 +282,7 @@ export default {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         this.pageNum = 1;
-        this.getUserList();
+        this.getCandidateList();
       }, 300);
     },
     toAdd() {
@@ -313,7 +313,7 @@ export default {
     /** 删除按钮操作 */
   },
   created() {
-    this.getGeographyList();
+    this.getCandidateList();
   },
   mounted() {
     this.$nextTick(function () {
@@ -365,7 +365,7 @@ export default {
   }
   .table {
     padding: 0 10px;
-    height: calc(100% - 120px - 32px);
+    height: calc(100% - 120px - 50px);
     overflow: auto;
     .status-lock {
       color: #ae3d2e;
@@ -377,6 +377,7 @@ export default {
     }
   }
   .page {
+    margin-top: 18px;
     height: 32px;
   }
 }

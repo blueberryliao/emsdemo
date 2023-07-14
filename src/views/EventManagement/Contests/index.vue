@@ -65,13 +65,15 @@
         }"
         :data="tableData"
         style="width: 100%"
+        height="100%"
         ref="tableData"
-        row-key="userId"
-        @selection-change="getCheckBoxList"
+        row-key="id"
+        default-expand-all
+        :tree-props="treeProps"
         stripe
       >
         <el-table-column
-          prop="userName"
+          prop="electionEvent"
           label="Election Event"
           min-width="8%"
           align="center"
@@ -79,27 +81,27 @@
         >
         </el-table-column>
         <el-table-column
-          prop="password"
+          prop="contestName"
           label="Contest Name"
           min-width="8%"
           align="center"
         >
         </el-table-column>
         <el-table-column
-          prop="fullName"
+          prop="contestType"
           label="Contest Type"
           align="left"
           min-width="10%"
           :show-overflow-tooltip="true"
         >
-          <template slot-scope="scope">
+          <!-- <template slot-scope="scope">
             <span>
               {{ scope.row.fullName }}
             </span>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column
-          prop="sex"
+          prop="candidatesNumber"
           label="Candidates Number"
           min-width="8%"
           align="center"
@@ -107,7 +109,7 @@
         >
         </el-table-column>
         <el-table-column
-          prop="roleName"
+          prop="voteFor"
           label="Vote For"
           min-width="15%"
           align="center"
@@ -115,7 +117,7 @@
         >
         </el-table-column>
         <el-table-column
-          prop="roleName"
+          prop="writeIn"
           label="Write-in"
           min-width="8%"
           align="center"
@@ -124,40 +126,35 @@
         </el-table-column>
 
         <el-table-column
-          label="Operation"
+          label="Add"
           prop="Operation"
           align="center"
           :show-overflow-tooltip="true"
           min-width="5%"
         >
-          <template slot-scope="scope">
-            <span
-              v-if="scope.row.status == 1"
-              class="status-lock"
-              @click="changeStatus(scope.row)"
-              ><i class="el-icon-lock"></i>
-            </span>
-            <span v-else @click="changeStatus(scope.row)" class="status-unlock"
-              ><i class="el-icon-unlock"></i>
+          <template slot-scope="scope" v-if="scope.row.parentId == 0">
+            <span class="add" @click="add(scope.row)"
+              ><i class="el-icon-circle-plus"></i>
             </span>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <div class="page">
+    <!-- <div class="page">
       <Pagination
         :total="total"
         :page.sync="pageNum"
         :limit.sync="pageSize"
-        @pagination="getGeographyList"
+        @pagination="getContestList"
       ></Pagination>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import Pagination from "@/components/Pagination/index.vue";
-import { getGeographyList } from "@/api/geography.js";
+import { handleTree } from "@/utils/ruoyi";
+import { getContestList } from "@/api/contest.js";
 export default {
   components: { Pagination },
   //   components: {
@@ -172,16 +169,17 @@ export default {
         { label: "all", value: "" },
         {
           label: "Candidate",
-          value: 1,
+          value: "candidate",
         },
         {
           label: "Question",
-          value: 2,
+          value: "question",
         },
       ],
       authority: "",
       authorityOptions: [{ label: "all", value: "" }],
       tableData: [],
+      treeProps: { children: "children", hasChildren: "hasChildren" },
       loading: false,
       checkBoxList: [],
       checkedIds: [],
@@ -194,27 +192,19 @@ export default {
       equipmentUserAuthorityList: [],
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
+
   watch: {},
   methods: {
-    getGeographyList() {
-      getGeographyList().then((res) => {
+    getContestList() {
+      let query = {
+        contestName: this.contestName,
+        contestType: this.contestType,
+      };
+      getContestList(query).then((res) => {
         console.log("res", res);
         if (res.code == 200) {
-          this.geographyList = res.data;
-          // this.treeData = handleTree(this.geographyList);
-          // console.log("tree", this.treeData);
+          this.tableData = handleTree(res.data);
+          console.log("tree", this.tableData);
         }
       });
     },
@@ -223,7 +213,7 @@ export default {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
         this.pageNum = 1;
-        this.getUserList();
+        this.getContestList();
       }, 300);
     },
     toAdd() {
@@ -251,10 +241,11 @@ export default {
       let limitpage = this.pageSize; //每页条数，具体是组件取值
       return index + 1 + (curpage - 1) * limitpage;
     },
-    /** 删除按钮操作 */
+    /** 添加按钮操作 */
+    add() {},
   },
   created() {
-    this.getGeographyList();
+    this.getContestList();
   },
   mounted() {
     this.$nextTick(function () {
@@ -308,13 +299,8 @@ export default {
     padding: 0 10px;
     height: calc(100% - 120px - 32px);
     overflow: auto;
-    .status-lock {
-      color: #ae3d2e;
-      cursor: pointer;
-    }
-    .status-unlock {
-      color: #5a9cf8;
-      cursor: pointer;
+    .add {
+      cursor: not-allowed;
     }
   }
   .page {

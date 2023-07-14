@@ -19,10 +19,11 @@
 
           <el-date-picker
             v-model="date1"
-            type="datetimerange"
+            type="daterange"
             start-placeholder="Starting Date"
-            end-placeholder="Deadline"
-            :default-time="['12:00:00']"
+            end-placeholder="Ending Date"
+            data-format="yyyy-MM-dd"
+            value-format="yyyy-MM-dd"
           >
           </el-date-picker>
         </div>
@@ -375,7 +376,7 @@ export default {
       align-items: center;
     }
     .search-unit {
-      margin-right: 40px;
+      margin-right: 20px;
       display: flex;
       justify-content: flex-start;
       align-items: center;

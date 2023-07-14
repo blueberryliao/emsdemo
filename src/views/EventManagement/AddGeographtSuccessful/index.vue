@@ -33,119 +33,83 @@
         }"
         :data="tableData"
         style="width: 100%"
+        height="100%"
         ref="tableData"
-        row-key="userId"
-        @selection-change="getCheckBoxList"
+        row-key="id"
+        default-expand-all
+        lazy
+        :tree-props="treeProps"
         stripe
       >
-        <!-- <el-table-column
-          type="selection"
-          min-width="2%"
-          :reserve-selection="true"
-        ></el-table-column> -->
-        <!-- <el-table-column
-          type="index"
-          min-width="2%"
-          width="80"
-          label="SN"
-          align="center"
-          :index="indexMethod"
-        >
-        </el-table-column> -->
         <el-table-column
-          prop="userName"
+          prop="districtName"
           label="District Name"
-          min-width="8%"
-          align="center"
+          min-width="18%"
+          align="left"
           show-overflow-tooltip
         >
         </el-table-column>
         <el-table-column
-          prop="password"
+          prop="idNumber"
           label="ID Number"
           min-width="8%"
           align="center"
         >
-          <template slot-scope="scope">
-            <span v-if="scope.row.password">
-              {{ scope.row.password }}
-            </span>
-            <span v-else> ****** </span>
-          </template>
         </el-table-column>
         <el-table-column
-          prop="fullName"
+          prop="level"
           label="Level"
           align="left"
           min-width="10%"
           :show-overflow-tooltip="true"
         >
-          <template slot-scope="scope">
-            <span>
-              {{ scope.row.fullName }}
-            </span>
-          </template>
         </el-table-column>
         <el-table-column
-          prop="sex"
+          prop="location"
           label="Location"
           min-width="8%"
           align="center"
           show-overflow-tooltip
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.sex == 0">female</span>
-            <span v-if="scope.row.sex == 1">male</span>
-          </template> -->
         </el-table-column>
         <el-table-column
-          prop="roleName"
+          prop="electionEvent"
           label="Election Event"
           min-width="15%"
           align="center"
           show-overflow-tooltip
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.authority == 0">female</span>
-            <span v-if="scope.row.authority == 1">male</span>
-          </template> -->
         </el-table-column>
-
         <el-table-column
-          label="Operation"
-          prop="Operation"
+          label="Add"
+          prop="status"
           align="center"
           :show-overflow-tooltip="true"
-          min-width="5%"
+          width="220px"
         >
           <template slot-scope="scope">
-            <span
-              v-if="scope.row.status == 1"
-              class="status-lock"
-              @click="changeStatus(scope.row)"
-              ><i class="el-icon-lock"></i>
-            </span>
-            <span v-else @click="changeStatus(scope.row)" class="status-unlock"
-              ><i class="el-icon-unlock"></i>
+            <span class="add" @click="add(scope.row)"
+              ><i class="el-icon-circle-plus"></i>
             </span>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <div class="page">
+    <!-- <div class="page">
       <Pagination
         :total="total"
         :page.sync="pageNum"
         :limit.sync="pageSize"
         @pagination="getGeographyList"
       ></Pagination>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
 import Pagination from "@/components/Pagination/index.vue";
 import { getGeographyList } from "@/api/geography.js";
+import { handleTree } from "@/utils/ruoyi";
 export default {
   components: { Pagination },
   //   components: {
@@ -171,6 +135,7 @@ export default {
       authority: "",
       authorityOptions: [{ label: "all", value: "" }],
       tableData: [],
+      treeProps: { children: "children", hasChildren: "hasChildren" },
       loading: false,
       checkBoxList: [],
       checkedIds: [],
@@ -202,8 +167,8 @@ export default {
         console.log("res", res);
         if (res.code == 200) {
           this.geographyList = res.data;
-          // this.treeData = handleTree(this.geographyList);
-          // console.log("tree", this.treeData);
+          this.tableData = handleTree(res.data);
+          console.log("tree", this.tableData);
         }
       });
     },
@@ -240,7 +205,8 @@ export default {
       let limitpage = this.pageSize; //每页条数，具体是组件取值
       return index + 1 + (curpage - 1) * limitpage;
     },
-    /** 删除按钮操作 */
+    /** 添加按钮操作 */
+    add() {},
   },
   created() {
     this.getGeographyList();
@@ -274,7 +240,7 @@ export default {
   }
   .search {
     width: 100%;
-    height: 60px;
+    height: 20px;
     display: flex;
     justify-content: flex-start;
     align-items: center;
@@ -295,7 +261,7 @@ export default {
   }
   .table {
     padding: 0 10px;
-    height: calc(100% - 60px - 32px);
+    height: calc(100% - 60px - 50px);
     overflow: auto;
     .status-lock {
       color: #ae3d2e;
@@ -304,6 +270,9 @@ export default {
     .status-unlock {
       color: #5a9cf8;
       cursor: pointer;
+    }
+    .add {
+      cursor: not-allowed;
     }
   }
   .page {

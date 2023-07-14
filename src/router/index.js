@@ -59,7 +59,7 @@ const routes = [
         component: () => import("@/views/EventManagement/Contests/index.vue"),
       },
       {
-        path: "/ElectionConfiguration/Candites",
+        path: "/ElectionConfiguration/Candidates",
         component: () => import("@/views/EventManagement/Cadidates/index.vue"),
       },
       {

@@ -163,7 +163,7 @@ export default {
                 this.loading = false;
                 // this.$router.push({ path: this.redirect || "/" });
                 sessionStorage.setItem("token", res.token);
-                this.$router.push({ path: "/SystemAdministration" });
+                this.$router.push({ path: "/ElectionConfiguration" });
               }
             })
             .catch((e) => {

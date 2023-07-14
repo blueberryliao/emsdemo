@@ -48,14 +48,14 @@ let MenuList = [
         isDeveloped: true,
       },
       {
-        path: "/ElectionConfiguration/Candites",
-        name: "Candites",
+        path: "/ElectionConfiguration/Candidates",
+        name: "Candidates",
         meta: {
           icon: null,
-          title: "Candites",
+          title: "Candidates",
         },
         menuLevel: 2,
-        limit: ["Candites"],
+        limit: ["Candidates"],
         index: "14",
         isDeveloped: true,
       },
