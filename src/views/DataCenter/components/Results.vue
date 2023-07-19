@@ -49,6 +49,61 @@
               <i class="el-icon-download" />
               <i class="el-icon-full-screen" />
             </div>
+            <!-- <div class="bar-row">
+              <div class="bar-position">Mearsure A</div>
+              <div class="bar-se"></div>
+              <div class="bar-bar">
+                <div
+                  class="bar"
+                  :style="{ width: '50%', backgroundColor: 'red' }"
+                >
+                  350
+                </div>
+                <div
+                  class="bar"
+                  :style="{ width: '40%', backgroundColor: 'pink' }"
+                >
+                  100
+                </div>
+              </div>
+              <div class="bar-legend">
+                <div class="legend-item">
+                  <div class="legend-block"></div>
+                  <div class="legend-word">YES</div>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-block"></div>
+                  <div class="legend-word">No</div>
+                </div>
+              </div>
+            </div> -->
+            <div class="bar-row" v-for="item in barOpt" :key="item.name">
+              <div class="bar-position">{{ item.name }}</div>
+              <div class="bar-se"></div>
+              <div class="bar-bar">
+                <div
+                  v-for="i in item.value"
+                  :key="i.num"
+                  class="bar"
+                  :style="{ width: i.ratio, backgroundColor: i.color }"
+                >
+                  {{ i.num }}
+                </div>
+              </div>
+              <div class="bar-legend">
+                <div
+                  class="legend-item"
+                  v-for="j in item.legend"
+                  :key="j.label"
+                >
+                  <div
+                    class="legend-block"
+                    :style="{ backgroundColor: j.color }"
+                  ></div>
+                  <div class="legend-word">{{ j.label }}</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -72,6 +127,16 @@
           <div class="op">
             <i class="el-icon-download" />
             <i class="el-icon-full-screen" />
+          </div>
+          <div class="lists">
+            <div class="list-row" v-for="item in barOpt">
+              <div class="list-img">
+                <img src="../../../assets//img/photo.jpg" alt="" />
+              </div>
+              <div class="list-positon">{{ item.name }}</div>
+              <div class="list-can">{{ item.legend[0].label }}</div>
+              <div class="list-vote">{{ item.value[0].num }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -175,6 +240,71 @@ export default {
         ],
       },
       //右上区域
+      barOpt: [
+        {
+          name: "Measure A",
+          value: [
+            { num: 350, ratio: "78%", color: "#b5daff" },
+            { num: 100, ratio: "22%", color: "#5eaeff" },
+          ],
+          legend: [
+            { label: "Yes", color: "#b5daff" },
+            { label: "No", color: "#5eaeff" },
+          ],
+        },
+        {
+          name: "Supervisor",
+          value: [
+            { num: 230, ratio: "51%", color: "#b5daff" },
+            { num: 120, ratio: "27%", color: "#5eaeff" },
+            { num: 100, ratio: "22%", color: "#158aff" },
+          ],
+          legend: [
+            { label: "Candidate4", color: "#b5daff" },
+            { label: "Candidate5", color: "#5eaeff" },
+            { label: "Candidate6", color: "#158aff" },
+          ],
+        },
+        {
+          name: "Vice Mayor",
+          value: [
+            { num: 230, ratio: "51%", color: "#b5daff" },
+            { num: 160, ratio: "36%", color: "#5eaeff" },
+            { num: 60, ratio: "13%", color: "#158aff" },
+          ],
+          legend: [
+            { label: "Candidate7", color: "#b5daff" },
+            { label: "Candidate8", color: "#5eaeff" },
+            { label: "Candidate9", color: "#158aff" },
+          ],
+        },
+        {
+          name: "Mayor",
+          value: [
+            { num: 205, ratio: "46%", color: "#b5daff" },
+            { num: 155, ratio: "34%", color: "#5eaeff" },
+            { num: 90, ratio: "20%", color: "#158aff" },
+          ],
+          legend: [
+            { label: "Candidate10", color: "#b5daff" },
+            { label: "Candidate11", color: "#5eaeff" },
+            { label: "Candidate12", color: "#158aff" },
+          ],
+        },
+        {
+          name: "Senator",
+          value: [
+            { num: 211, ratio: "47%", color: "#b5daff" },
+            { num: 139, ratio: "31%", color: "#5eaeff" },
+            { num: 100, ratio: "22%", color: "#158aff" },
+          ],
+          legend: [
+            { label: "Candidate13", color: "#b5daff" },
+            { label: "Candidate14", color: "#5eaeff" },
+            { label: "Candidate15", color: "#158aff" },
+          ],
+        },
+      ],
 
       //左下区域
       barChart: null,
@@ -485,6 +615,64 @@ export default {
           border: 1px solid #d4d4d7;
           margin-left: 20px;
           position: relative;
+          padding: 40px 20px;
+
+          .bar-row {
+            width: 100%;
+            height: 40px;
+            display: flex;
+            // border: #0090ff 1px solid;
+            // margin-bottom: 10px;
+            .bar-position {
+              width: 120px;
+              height: 40px;
+              line-height: 40px;
+              text-align: right;
+            }
+            .bar-se {
+              width: 4px;
+              height: 100%;
+              border-top: 1px solid #d4d4d7;
+              border-right: 1px solid #d4d4d7;
+              border-bottom: 1px solid #d4d4d7;
+              margin-left: 20px;
+            }
+            .bar-bar {
+              // width: calc(100% - 82px);
+              width: 500px;
+              height: 100%;
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              padding-left: 20px;
+              .bar {
+                height: 25px;
+                text-align: center;
+                line-height: 25px;
+              }
+            }
+            .bar-legend {
+              display: flex;
+              justify-content: flex-start;
+              align-items: center;
+              padding-left: 20px;
+
+              .legend-item {
+                width: 120px;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                margin-right: 20px;
+                .legend-block {
+                  width: 22px;
+                  height: 15px;
+                  background-color: red;
+                  border-radius: 3px;
+                  margin-right: 10px;
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -493,7 +681,7 @@ export default {
       // border: 1px solid #d4d4d7;
       display: flex;
       .bottom-left-case {
-        width: 53%;
+        width: 56%;
         border: 1px solid #d4d4d7;
         margin-right: 20px;
         position: relative;
@@ -513,9 +701,57 @@ export default {
         }
       }
       .bottom-right-case {
-        width: 47%;
+        height: 100%;
+        width: 44%;
         border: 1px solid #d4d4d7;
         position: relative;
+        padding-top: 40px;
+        .lists {
+          height: 100%;
+        }
+        .list-row {
+          height: 20%;
+          display: flex;
+          align-items: center;
+          // border: 1px springgreen solid;
+          .list-img {
+            height: 100%;
+            width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            img {
+              width: 50px;
+            }
+          }
+          .list-positon {
+            width: 150px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            // font-weight: 900;
+            // color: #0090ff;
+          }
+          .list-can {
+            height: 100%;
+            width: 200px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            // font-weight: 900;
+            // color: #0090ff;
+          }
+          .list-vote {
+            height: 100%;
+            width: 140px;
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            // font-weight: 900;
+            // color: #0090ff;
+          }
+        }
       }
     }
     .title {

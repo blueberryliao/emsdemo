@@ -28,7 +28,12 @@
         </div>
         <div id="ballotCase" class="ballot-case">
           <canvas id="myCanvas" class="my-canvas"></canvas>
-          <img id="myImg" class="ballot-image" :src="imgUrl" alt="" />
+          <img
+            id="myImg"
+            class="ballot-image"
+            src="../../../assets/img/ballot.jpg"
+            alt=""
+          />
           <!-- <img id="test" src="../../../assets/img/ballot.jpg" /> -->
         </div>
         <div class="btn">
@@ -144,10 +149,6 @@
 <script>
 import imgUrl from "@/assets/img/ballot.jpg";
 export default {
-  //   components: {
-  //     //导入的组件
-  //     Tab,
-  //   },
   data() {
     return {
       contest: 1,
@@ -167,98 +168,91 @@ export default {
         },
       ],
       radio: 3,
-      // imgUrl: "../../../assets/img/ballot.jpg",
+      imgUrl: imgUrl,
+      ballotCaseDom: null,
+      canvasDom: null, //canvasDom 对象
+      myCanvas: null, // canvas对象
+      myImgDom: null,
+      pixelWidth: 0, //图片实际的像素宽度
+      pixelHeight: 0,
+      showHeight: 0, //canvas区域的的视在高度
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
-  //   watch: {
-  //     //观察
-  //     $route: "routeHandle",
-  //     keywordSearch: {
-  //       handler(nv) {},
-  //     },
-  //   },
+  computed: {
+    //计算属性
+    rate: {
+      get() {
+        return this.pixelHeight / this.showHeight;
+      },
+      set(val) {},
+    },
+    showWidth: {
+      get() {
+        return this.pixelWidth / this.rate;
+      },
+    },
+  },
+
   methods: {
     /** 搜索按钮操作 */
     handleQuery() {
       clearTimeout(this.timer);
       this.timer = setTimeout(() => {
-        this.pageNum = 1;
-        this.getUserList();
+        // this.pageNum = 1;
+        // this.getUserList();
       }, 300);
     },
+    /** 获取终端信息 */
+    getInfo() {},
+
+    /** 绘制canvas图 */
     drawImage() {
-      let canvasDom = document.getElementById("myCanvas");
-      let pixelwidth = 1728;
-      let pixelheight = 2664;
-      //获取canvas区域的的视在高度
-      let showheight = document.getElementById("ballotCase").scrollHeight;
-      let rate = 2664 / showheight;
-      let showwidth = 1728 / rate;
-      console.log("showheight", showheight);
-      console.log("showwidth", showwidth);
-
-      let myCanvas = canvasDom.getContext("2d");
-      console.log("myCanvas", myCanvas);
-
+      console.log("this.pixelWidth", this.pixelWidth);
+      console.log("this.pixelHeight", this.pixelHeight);
+      console.log("this.showWidth", this.showWidth);
+      console.log("this.showHeight", this.showHeight);
+      console.log("this.rate", this.rate);
       // 如果要设置行内样式的宽高，即实际像素的宽高，设置方式为：
-      canvasDom.setAttribute("width", pixelwidth);
-      canvasDom.setAttribute("height", pixelheight);
-      // canvasDom.setAttribute("width", 1728);
-      // canvasDom.setAttribute("height", 2664);
+      this.canvasDom.setAttribute("width", this.pixelWidth);
+      this.canvasDom.setAttribute("height", this.pixelHeight);
       //有时也需要设置canvas的视在宽高，即实际显示的宽度和高度，设置方法为：
-      canvasDom.style.setProperty("width", showwidth + "px");
-      canvasDom.style.setProperty("height", showheight + "px");
-      let myImg = document.getElementById("myImg");
-      myImg.src = `${imgUrl}`;
-      myImg.onload = function () {
-        myCanvas.drawImage(myImg, 0, 0, pixelwidth, pixelheight);
-
-        myCanvas.fillStyle = "deeppink";
-        myCanvas.strokeStyle = "red";
-        myCanvas.lineWidth = 5;
-        myCanvas.lineJoin = "round";
-
-        let x = 181;
-        let y = 662;
-        let w = 1417;
-        let h = 472;
-
-        // myCanvas.strokeRect(80, 420, 140, 60);
-        myCanvas.strokeRect(x, y, w, h);
+      this.canvasDom.style.setProperty("width", this.showWidth + "px");
+      this.canvasDom.style.setProperty("height", this.showHeight + "px");
+      // this.myImg.src = `${this.imgUrl}`;
+      this.myImgDom.onload = () => {
+        this.myCanvas.drawImage(
+          this.myImgDom,
+          0,
+          0,
+          this.pixelWidth,
+          this.pixelHeight
+        );
+        this.drawRedBox(181, 662, 1417, 472);
       };
     },
     drawRedBox(x, y, w, h) {
-      let canvas = document.querySelector("#test");
-      console.log("canvas", canvas);
-      if (canvas.getContext) {
-        var ctx = canvas.getContext("2d");
-        ctx.fillStyle = "deeppink";
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 2;
-        ctx.lineJoin = "round";
-        ctx.strokeRect(x, y, w, h);
-      }
+      this.myCanvas.strokeStyle = "red";
+      this.myCanvas.lineWidth = 5;
+      this.myCanvas.lineJoin = "round";
+      this.myCanvas.strokeRect(x, y, w, h);
     },
   },
   created() {},
   mounted() {
     this.$nextTick(function () {
+      //获取绘图相关DOM及canvas对象
+      this.canvasDom = document.getElementById("myCanvas");
+      this.ballotCaseDom = document.getElementById("ballotCase");
+      this.myImgDom = document.getElementById("myImg");
+      this.myCanvas = this.canvasDom.getContext("2d");
+      //获取图片视高
+      this.showHeight = this.ballotCaseDom.scrollHeight;
+      //获取选票的实际像素尺寸
+      this.getInfo();
+      this.pixelWidth = 1728;
+      this.pixelHeight = 2662;
+      //绘图
       this.drawImage();
-      // Code that will run only after the entire view has been rendered
-      // this.drawRedBox(181, 662, 1417, 472);
-      // this.drawRedBox(11, 6, 14, 47);
     });
   },
 };
