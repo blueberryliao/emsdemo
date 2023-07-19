@@ -74,8 +74,8 @@
     </div> -->
     <div class="table">
       <div class="info">
-        There is nothing here. Please click <span>Create Event</span> to add
-        election event.
+        There is no content available. Please click on
+        <span>"Create Event"</span> to add an election event.
       </div>
 
       <!-- <el-table
@@ -397,7 +397,7 @@ export default {
     overflow: auto;
     .info {
       padding: 20px;
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 900;
       span {
         color: #5a9cf8;

@@ -26,7 +26,11 @@
           <div class="info-item">Image Name:</div>
           <div class="info-item">Image Scan Time:</div>
         </div>
-        <div class="ballot-case"></div>
+        <div id="ballotCase" class="ballot-case">
+          <canvas id="myCanvas" class="my-canvas"></canvas>
+          <img id="myImg" class="ballot-image" :src="imgUrl" alt="" />
+          <!-- <img id="test" src="../../../assets/img/ballot.jpg" /> -->
+        </div>
         <div class="btn">
           <div class="btn-left">
             <el-button type="primary" size="small">Submit</el-button>
@@ -138,9 +142,7 @@
 </template>
 
 <script>
-// import Request from "@/common/net/request.js";
-// import Tab from "@/components/Tab/tabIncome.vue";
-// const request = new Request();
+import imgUrl from "@/assets/img/ballot.jpg";
 export default {
   //   components: {
   //     //导入的组件
@@ -165,6 +167,7 @@ export default {
         },
       ],
       radio: 3,
+      // imgUrl: "../../../assets/img/ballot.jpg",
     };
   },
   //   computed: {
@@ -187,12 +190,75 @@ export default {
   //     },
   //   },
   methods: {
-    getTableYear() {},
+    /** 搜索按钮操作 */
+    handleQuery() {
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => {
+        this.pageNum = 1;
+        this.getUserList();
+      }, 300);
+    },
+    drawImage() {
+      let canvasDom = document.getElementById("myCanvas");
+      let pixelwidth = 1728;
+      let pixelheight = 2664;
+      //获取canvas区域的的视在高度
+      let showheight = document.getElementById("ballotCase").scrollHeight;
+      let rate = 2664 / showheight;
+      let showwidth = 1728 / rate;
+      console.log("showheight", showheight);
+      console.log("showwidth", showwidth);
+
+      let myCanvas = canvasDom.getContext("2d");
+      console.log("myCanvas", myCanvas);
+
+      // 如果要设置行内样式的宽高，即实际像素的宽高，设置方式为：
+      canvasDom.setAttribute("width", pixelwidth);
+      canvasDom.setAttribute("height", pixelheight);
+      // canvasDom.setAttribute("width", 1728);
+      // canvasDom.setAttribute("height", 2664);
+      //有时也需要设置canvas的视在宽高，即实际显示的宽度和高度，设置方法为：
+      canvasDom.style.setProperty("width", showwidth + "px");
+      canvasDom.style.setProperty("height", showheight + "px");
+      let myImg = document.getElementById("myImg");
+      myImg.src = `${imgUrl}`;
+      myImg.onload = function () {
+        myCanvas.drawImage(myImg, 0, 0, pixelwidth, pixelheight);
+
+        myCanvas.fillStyle = "deeppink";
+        myCanvas.strokeStyle = "red";
+        myCanvas.lineWidth = 5;
+        myCanvas.lineJoin = "round";
+
+        let x = 181;
+        let y = 662;
+        let w = 1417;
+        let h = 472;
+
+        // myCanvas.strokeRect(80, 420, 140, 60);
+        myCanvas.strokeRect(x, y, w, h);
+      };
+    },
+    drawRedBox(x, y, w, h) {
+      let canvas = document.querySelector("#test");
+      console.log("canvas", canvas);
+      if (canvas.getContext) {
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "deeppink";
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 2;
+        ctx.lineJoin = "round";
+        ctx.strokeRect(x, y, w, h);
+      }
+    },
   },
   created() {},
   mounted() {
     this.$nextTick(function () {
+      this.drawImage();
       // Code that will run only after the entire view has been rendered
+      // this.drawRedBox(181, 662, 1417, 472);
+      // this.drawRedBox(11, 6, 14, 47);
     });
   },
 };
@@ -212,7 +278,6 @@ export default {
     color: #67c23a;
   }
   .header {
-    // background-color: #d4d4d7;
     height: 60px;
     width: 100%;
     display: flex;
@@ -226,7 +291,6 @@ export default {
       align-items: center;
       .search-title {
         margin-right: 5px;
-        // width: 100px;
       }
       .search-item {
         width: 200px;
@@ -240,12 +304,25 @@ export default {
     .content-left {
       width: 55%;
       height: 100%;
-      // border: 1px springgreen solid;
       padding: 10px 20px;
       .ballot-case {
         height: calc(100% - 80px);
+        width: 100%;
         border: 2px #d4d4d7 solid;
-        padding: 10px;
+        // padding: 10px;
+        // img {
+        //   height: 100%;
+        //   text-align: center;
+        // }
+        .my-canvas {
+          // height: 100%;
+          display: block;
+          margin: 0 auto;
+        }
+        .ballot-image {
+          height: 0;
+          width: 0;
+        }
       }
       .btn {
         height: 60px;
@@ -258,12 +335,10 @@ export default {
     .content-right {
       width: 45%;
       height: 100%;
-      // border: 1px salmon solid;
       padding: 10px 20px;
       .contest-case {
         height: 350px;
         border: 2px #d4d4d7 solid;
-
         .contest-header {
           height: 60px;
           line-height: 60px;
@@ -290,8 +365,6 @@ export default {
           }
           .content-subtitle {
             font-size: 16px;
-            // line-height: 15px;
-            // height: 15px;
             padding-bottom: 10px;
           }
           .opt-item {
@@ -346,8 +419,6 @@ export default {
       height: 20px;
       line-height: 20px;
       margin-bottom: 10px;
-      // font-weight: 900;
-
       .info-item {
         margin-right: 20px;
       }

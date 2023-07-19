@@ -94,6 +94,10 @@
             <el-col :span="6"></el-col>
           </el-row>
         </div>
+        <div class="form-button">
+          <el-button @click="cancel()">Cancel</el-button>
+          <el-button type="primary" @click="saveForm()">Save</el-button>
+        </div>
       </div>
     </div>
     <!-- <div class="fingerprint">
@@ -106,10 +110,6 @@
       <div class="left"><div class="title">Signature</div></div>
       <div class="right"></div>
     </div> -->
-    <div class="form-button">
-      <el-button @click="cancel()" disabled>Cancel</el-button>
-      <el-button type="primary" @click="saveForm()" disabled>Save</el-button>
-    </div>
   </div>
 </template>
 
@@ -148,44 +148,46 @@ export default {
     getTableYear() {},
 
     cancel() {
-      this.$msgbox
-        .confirm(`Are you sure you want to clear form?`, "System Info", {
-          confirmButtonText: "Confirm",
-          cancelButtonText: "Cancel",
-          type: "warning",
-        })
-        .then(() => {
-          console.log("this.formInline", this.formInline);
-          this.formInline = {
-            userName: "",
-            Password: "",
-            fullName: "",
-            gender: "",
-            userType: "",
-            roleIds: [],
-            position: "",
-            jurisdictionId: "",
-            phoneNumber: "",
-            digitalCertificates: "",
-            status: 0,
-          };
-        });
+      // this.$msgbox
+      //   .confirm(`Are you sure you want to clear form?`, "System Info", {
+      //     confirmButtonText: "Confirm",
+      //     cancelButtonText: "Cancel",
+      //     type: "warning",
+      //   })
+      //   .then(() => {
+      //     console.log("this.formInline", this.formInline);
+      //     this.formInline = {
+      //       userName: "",
+      //       Password: "",
+      //       fullName: "",
+      //       gender: "",
+      //       userType: "",
+      //       roleIds: [],
+      //       position: "",
+      //       jurisdictionId: "",
+      //       phoneNumber: "",
+      //       digitalCertificates: "",
+      //       status: 0,
+      //     };
+      //   });
+      this.$router.push({ path: "/VoterManagement" });
     },
     saveForm() {
-      this.$refs.ruleForm.validate((valid) => {
-        if (!valid) {
-          return this.$message.error(
-            "please finish the required form validation"
-          );
-        }
-      });
-      console.log("this.formInline", this.formInline);
-      addUser(this.formInline).then((res) => {
-        console.log("res", res);
-        if (res.code == 200) {
-          this.$router.push({ path: "/SystemAdministration" });
-        }
-      });
+      this.$router.push({ path: "/VoterManagement" });
+      // this.$refs.ruleForm.validate((valid) => {
+      //   if (!valid) {
+      //     return this.$message.error(
+      //       "please finish the required form validation"
+      //     );
+      //   }
+      // });
+      // console.log("this.formInline", this.formInline);
+      // addUser(this.formInline).then((res) => {
+      //   console.log("res", res);
+      //   if (res.code == 200) {
+      //     this.$router.push({ path: "/SystemAdministration" });
+      //   }
+      // });
     },
   },
   created() {
@@ -206,7 +208,7 @@ export default {
   height: 100%;
   .citizenship {
     width: 100%;
-    height: 900px;
+    height: 100%;
     // border: 1px salmon solid;
     display: flex;
     .avatar-pic {
@@ -253,6 +255,8 @@ export default {
     padding-bottom: 20px;
     .form {
       padding-top: 20px;
+      height: calc(100% - 32px - 40px - 40px);
+      overflow-y: auto;
       .form-title {
         background-color: #e1e3e6;
         font-size: 18px;

@@ -163,7 +163,9 @@ export default {
                 this.loading = false;
                 // this.$router.push({ path: this.redirect || "/" });
                 sessionStorage.setItem("token", res.token);
-                this.$router.push({ path: "/ElectionConfiguration" });
+                this.$router.push({
+                  path: "/ElectionConfiguration/ElectionEvents",
+                });
               }
             })
             .catch((e) => {

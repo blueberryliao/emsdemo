@@ -218,22 +218,35 @@ export default {
         { label: "all", value: "" },
         {
           label: "President",
-          value: 1,
+          value: "President",
         },
         {
           label: "Vice-President",
-          value: 2,
+          value: "Vice-President",
         },
         {
           label: "Party List",
-          value: 3,
+          value: "Party List",
+        },
+        {
+          label: "Senator",
+          value: "Senator",
+        },
+        {
+          label: "Mayor",
+          value: "Mayor",
+        },
+        {
+          label: "Vice Mayor",
+          value: "Vice Mayor",
         },
       ],
       party: "",
       partyOptions: [
         { label: "all", value: "" },
-        { label: "Democratic Party", value: "democraticParty" },
-        { label: "Republican Party", value: "republicanParty" },
+        { label: "Democratic Party", value: "Democratic Party" },
+        { label: "Republican Party", value: "Republican Party" },
+        { label: "Non-Partisan", value: "Non-Partisan" },
       ],
       tableData: [],
       loading: false,
@@ -248,18 +261,6 @@ export default {
       equipmentUserAuthorityList: [],
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
   watch: {},
   methods: {
     getCandidateList() {
@@ -267,6 +268,8 @@ export default {
       let query = {
         electivePosition: this.position,
         politicalParty: this.party,
+        pageSize: this.pageSize,
+        pageNum: this.pageNum,
       };
       getCandidateList(query).then((res) => {
         console.log("res", res);

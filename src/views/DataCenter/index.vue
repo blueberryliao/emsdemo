@@ -15,10 +15,8 @@
           <Candidates></Candidates>
         </el-tab-pane>
         <el-tab-pane name="fourth" class="tab-pane">
-          <span slot="label" name="third"
-            ><i class="el-icon-s-data"></i> Results</span
-          >
-          <Results></Results>
+          <span slot="label"><i class="el-icon-s-data"></i> Results</span>
+          <Results :toRender="toRender"></Results>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -40,7 +38,8 @@ export default {
   },
   data() {
     return {
-      activeName: "second",
+      activeName: "fourth",
+      toRender: 0, //触发Result页面的echarts更新
     };
   },
   //   computed: {
@@ -63,7 +62,9 @@ export default {
   //     },
   //   },
   methods: {
-    handleClick() {},
+    handleClick() {
+      if (this.activeName == "fourth") this.toRender++;
+    },
   },
   created() {},
   mounted() {
@@ -88,13 +89,16 @@ export default {
     .el-tab {
       width: 100%;
       height: 100%;
+      height: calc(100% - 40px);
       .tab-pane {
         height: 100%;
+        // height: calc(100% - 20px);
       }
     }
   }
   ::v-deep .el-tabs__content {
-    height: 100%;
+    // height: 100%;
+    height: calc(100% - 20px);
   }
 }
 </style>

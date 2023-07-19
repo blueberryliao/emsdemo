@@ -2,6 +2,7 @@ let MenuList = [
   {
     name: "Election Configuration",
     path: "/ElectionConfiguration",
+    // path: "/ElectionConfiguration/ElectionEvents",
     meta: {
       icon: "el-icon-s-order",
       title: "Election Configuration",

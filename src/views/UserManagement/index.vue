@@ -116,7 +116,7 @@
           min-width="2%"
           width="80"
           label="SN"
-          align="center"
+          align="left"
           :index="indexMethod"
         >
         </el-table-column>
@@ -124,7 +124,7 @@
           prop="userName"
           label="User Name"
           min-width="8%"
-          align="center"
+          align="left"
           show-overflow-tooltip
         >
         </el-table-column>
@@ -132,7 +132,7 @@
           prop="password"
           label="Password"
           min-width="8%"
-          align="center"
+          align="left"
         >
           <template slot-scope="scope">
             <span v-if="scope.row.password">
@@ -157,8 +157,8 @@
         <el-table-column
           prop="sex"
           label="Gender"
-          min-width="8%"
-          align="center"
+          min-width="10%"
+          align="left"
           show-overflow-tooltip
         >
           <template slot-scope="scope">
@@ -170,31 +170,26 @@
           prop="roleName"
           label="Authority"
           min-width="15%"
-          align="center"
+          align="left"
           show-overflow-tooltip
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.authority == 0">female</span>
-            <span v-if="scope.row.authority == 1">male</span>
-          </template> -->
         </el-table-column>
         <el-table-column
           prop="userType"
-          sortable="custom"
           label="User Type"
-          align="center"
+          align="left"
           min-width="10%"
           :show-overflow-tooltip="true"
         >
           <template slot-scope="scope">
-            <span v-if="scope.row.userType == 1">systerm user</span>
-            <span v-if="scope.row.userType == 2">equiment user</span>
+            <span v-if="scope.row.userType == 1">Systerm user</span>
+            <span v-if="scope.row.userType == 2">Equiment user</span>
           </template>
         </el-table-column>
         <el-table-column
           prop="position"
           label="Positon"
-          align="center"
+          align="left"
           min-width="10%"
           :show-overflow-tooltip="true"
         >
@@ -209,7 +204,7 @@
           prop="jurisdiction"
           label="Jurisdiction"
           min-width="8%"
-          align="center"
+          align="left"
         >
           <template slot-scope="scope">
             <span v-if="scope.row.jurisdiction">
@@ -222,7 +217,7 @@
           prop="digitalCertificate"
           label="Digital Certificate"
           min-width="10%"
-          align="center"
+          align="left"
           :show-overflow-tooltip="true"
         >
           <template slot-scope="scope">
@@ -236,7 +231,7 @@
           fixed="right"
           label="Status"
           prop="status"
-          align="center"
+          align="left"
           :show-overflow-tooltip="true"
           min-width="5%"
         >
@@ -267,7 +262,7 @@
 
 <script>
 import { getUserList, changeStatus, getRoleList, deleteUser } from "@/api/user";
-import Pagination from "../../components/Pagination/index.vue";
+import Pagination from "@/components/Pagination/index.vue";
 
 export default {
   components: { Pagination },
@@ -281,7 +276,7 @@ export default {
       fullName: "",
       type: "",
       typeOptions: [
-        { label: "all", value: "" },
+        { label: "All", value: "" },
         {
           label: "System User",
           value: 1,
@@ -292,7 +287,7 @@ export default {
         },
       ],
       authority: "",
-      authorityOptions: [{ label: "all", value: "" }],
+      authorityOptions: [{ label: "All", value: "" }],
       tableData: [],
       loading: false,
       checkBoxList: [],
@@ -306,24 +301,12 @@ export default {
       equipmentUserAuthorityList: [],
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
   watch: {
     //观察
-    // $route: "routeHandle",
     type: {
       handler(nv) {
-        this.authorityOptions = [{ label: "all", value: "" }];
+        this.authorityOptions = [{ label: "All", value: "" }];
+        this.authority = "";
         if (nv == 1) {
           this.systemUserAuthorityList.map((item) => {
             this.authorityOptions.push({
@@ -350,6 +333,8 @@ export default {
         fullName: this.fullName,
         userType: this.type,
         authority: this.authority,
+        pageSize: this.pageSize,
+        pageNum: this.pageNum,
       };
       getUserList(query).then((res) => {
         if (res.code == 200) {

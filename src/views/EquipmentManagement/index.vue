@@ -92,6 +92,7 @@
         ref="tableData"
         row-key="id"
         @selection-change="getCheckBoxList"
+        @row-click="toEdit"
         stripe
         :highlight-current-row="true"
       >
@@ -119,7 +120,7 @@
         </el-table-column>
         <el-table-column
           prop="deviceId"
-          label="Device Id"
+          label="Device ID"
           min-width="8%"
           align="center"
         >
@@ -145,7 +146,7 @@
         </el-table-column>
         <el-table-column
           prop="userList"
-          label="user List"
+          label="User List"
           min-width="8%"
           align="center"
           show-overflow-tooltip
@@ -167,7 +168,7 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column
+        <!-- <el-table-column
           fixed="right"
           label="Edit"
           align="center"
@@ -179,7 +180,7 @@
               ><i class="el-icon-edit"></i>
             </span>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <div class="page">
@@ -195,6 +196,7 @@
 
 <script>
 import { getEquipmentList, deleteEquipment } from "@/api/equipment";
+import { getRoleList } from "@/api/user";
 import Pagination from "../../components/Pagination/index.vue";
 
 export default {
@@ -202,28 +204,37 @@ export default {
   data() {
     return {
       deviceType: "",
-      deviceTypeOptions: [
-        { label: "all", value: "" },
-        {
-          label: "VRVM",
-          value: "VRVM",
-        },
-        {
-          label: "EVM",
-          value: "EVM",
-        },
-        {
-          label: "PCOS",
-          value: "PCOS",
-        },
-        {
-          label: "CCOS",
-          value: "CCOS",
-        },
-      ],
+      // deviceTypeOptions: [
+      //   { label: "All", value: "" },
+      //   {
+      //     label: "VRVM",
+      //     value: "VRVM",
+      //   },
+      //   {
+      //     label: "DRE",
+      //     value: "DRE",
+      //   },
+      //   {
+      //     label: "PCOS",
+      //     value: "PCOS",
+      //   },
+      //   {
+      //     label: "CCOS",
+      //     value: "CCOS",
+      //   },
+      //   {
+      //     label: "BMD",
+      //     value: "BMD",
+      //   },
+      //   {
+      //     label: "MPVD",
+      //     value: "MPVD",
+      //   },
+      // ],
+      deviceTypeOptions: [{ label: "All", value: "" }],
       use: "",
       useOptions: [
-        { label: "all", value: "" },
+        { label: "All", value: "" },
         {
           label: "Registration",
           value: "Registration",
@@ -239,6 +250,10 @@ export default {
         {
           label: "Counting",
           value: "Counting",
+        },
+        {
+          label: "Marking",
+          value: "Marking",
         },
       ],
       jurisdiction: "",
@@ -267,6 +282,8 @@ export default {
         deviceType: this.deviceType,
         use: this.use,
         jurisdiction: this.jurisdiction,
+        pageSize: this.pageSize,
+        pageNum: this.pageNum,
       };
       getEquipmentList(query).then((res) => {
         if (res.code == 200) {
@@ -280,6 +297,21 @@ export default {
           this.tableData = res.rows;
           this.total = res.total;
           this.loading = false;
+        }
+      });
+    },
+    getDeviceOption() {
+      return getRoleList({
+        roleType: 2,
+      }).then((res) => {
+        console.log(res);
+        if (res.code == 200) {
+          res.rows.map((item) => {
+            this.deviceTypeOptions.push({
+              label: item.roleName.split(" ")[0],
+              value: item.roleName.split(" ")[0],
+            });
+          });
         }
       });
     },
@@ -354,7 +386,8 @@ export default {
         });
     },
   },
-  created() {
+  async created() {
+    await this.getDeviceOption();
     this.getEquipmentList();
     // this.getRoleList();
   },

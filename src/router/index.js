@@ -38,11 +38,8 @@ const routes = [
       },
       {
         path: "/ElectionConfiguration",
-        component: () => import("@/views/EventManagement/index.vue"),
-      },
-      {
-        path: "/ElectionConfiguration",
-        component: () => import("@/views/EventManagement/index.vue"),
+        // component: () => import("@/views/EventManagement/index.vue"),
+        redirect: "/ElectionConfiguration/ElectionEvents",
       },
       {
         path: "/ElectionConfiguration/ElectionEvents",

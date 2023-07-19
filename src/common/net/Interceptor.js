@@ -43,23 +43,29 @@ class Interceptor {
       (error) => {
         //  返回格式待商量
         const code = Number(error.response.status);
-        const message = error.response.statusText || "请求错误，请联系管理员";
+        const message =
+          error.response.statusText ||
+          "Request error. Please contact the administrator.";
         // 返回码待商量
         switch (code) {
           case 401: {
-            MessageBox("登录已过期, 是否重新登录?", "提示", {
-              confirmButtonText: "confirm",
-              cancelButtonText: "取消",
-              type: "warning",
-              center: true,
-            })
+            MessageBox(
+              "Login has expired. Would you like to log in again?",
+              "Notification",
+              {
+                confirmButtonText: "confirm",
+                cancelButtonText: "cancel",
+                type: "warning",
+                center: true,
+              }
+            )
               .then(() => {
                 // 重定向
                 location.replace(urlconfig.LOGIN_URL);
               })
               .catch(() => {
                 Message({
-                  message: "已取消重新登录",
+                  message: "Re-login has been canceled.",
                   type: "info",
                 });
               });
@@ -75,7 +81,7 @@ class Interceptor {
           case 405: {
             Message({
               type: "error",
-              message: "请求方法错误",
+              message: "Incorrect request method.",
             });
             break;
           }
@@ -96,7 +102,7 @@ class Interceptor {
   setproxy() {
     this._api = new proxy(this.api, {
       set() {
-        throw new error("禁止修改api");
+        throw new error("Modifying the API is prohibited.");
       },
       get(target, property) {
         return target[property];

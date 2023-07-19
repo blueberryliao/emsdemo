@@ -81,6 +81,7 @@
         }"
         :data="tableData"
         style="width: 100%"
+        height="100%"
         ref="tableData"
         row-key="userId"
         @selection-change="getCheckBoxList"
@@ -348,7 +349,7 @@ export default {
 .voter {
   height: 100%;
   width: 100%;
-  padding-bottom: 20px;
+  // padding-bottom: 20px;
   .header {
     background-color: #d4d4d7;
     height: 60px;
@@ -391,7 +392,8 @@ export default {
   }
   .table {
     padding: 0 10px;
-    height: calc(100% - 100px - 32px);
+    height: calc(100% - 120px);
+    margin-bottom: 20px;
     overflow: auto;
     .status-lock {
       color: #ae3d2e;

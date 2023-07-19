@@ -6,6 +6,7 @@
         :data="treeData"
         :props="defaultProps"
         default-expand-all
+        highlight-current
         :filter-node-method="filterNode"
         ref="tree"
         @node-click="handleNodeClick"
@@ -51,8 +52,8 @@
           <el-col :span="12">
             <el-form-item label="Gender" prop="gender">
               <el-select v-model="formInline.gender" style="width: 300px">
-                <el-option label="male" value="1"></el-option>
-                <el-option label="female" value="0"></el-option>
+                <el-option label="Male" value="1"></el-option>
+                <el-option label="Female" value="0"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -74,9 +75,24 @@
           <el-col :span="12">
             <el-form-item label="Authority" prop="roleIds">
               <el-select
-                v-model="formInline.roleIds"
-                multiple
+                v-if="formInline.userType == 1"
+                v-model="formInline.roleId"
                 style="width: 300px"
+                @change="printAuthority"
+              >
+                <el-option
+                  v-for="item in authorityOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                </el-option>
+              </el-select>
+              <el-select
+                v-else
+                v-model="formInline.roleIds"
+                style="width: 300px"
+                multiple
                 @change="printAuthority"
               >
                 <el-option
@@ -104,6 +120,7 @@
               <el-input
                 v-model="formInline.jurisdictionId"
                 style="width: 300px"
+                placeholder="Click on the left precinct list to enter"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -153,15 +170,11 @@
 </template>
 
 <script>
-import { getGeographyList } from "../../../api/geography.js";
+import { getGeographyList } from "@/api/geography.js";
 import { getRoleList, addUser } from "@/api/user";
 import { handleTree } from "@/utils/ruoyi";
 
 export default {
-  //   components: {
-  //     //导入的组件
-  //     Tab,
-  //   },
   data() {
     return {
       filterText: "",
@@ -170,19 +183,7 @@ export default {
         children: "children",
         label: "districtName",
       },
-      formInline: {
-        userName: "",
-        password: "",
-        fullName: "",
-        gender: "",
-        userType: "",
-        roleIds: [],
-        position: "",
-        jurisdictionId: "",
-        phoneNumber: "",
-        digitalCertificates: "",
-        status: 0,
-      },
+      formInline: {},
       rules: {
         userName: [
           {
@@ -190,7 +191,6 @@ export default {
             message: "please input user name",
             trigger: "blur",
           },
-          // { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
         ],
         password: [
           { required: true, message: "please input password", trigger: "blur" },
@@ -209,13 +209,13 @@ export default {
             trigger: "change",
           },
         ],
-        roleIds: [
-          {
-            required: true,
-            message: "please set authority",
-            trigger: "change",
-          },
-        ],
+        // roleIds: [
+        //   {
+        //     required: true,
+        //     message: "please set authority",
+        //     trigger: "change",
+        //   },
+        // ],
         position: [
           {
             required: true,
@@ -265,14 +265,16 @@ export default {
         fullName: "",
         gender: "1",
         userType: 1,
+        roleId: "",
         roleIds: [],
         position: "",
-        jurisdictionId: "",
+        jurisdictionId: `${this.treeData[0].districtName} , ${this.treeData[0].idNumber}`,
         phoneNumber: "",
         digitalCertificates: "",
         status: 0,
       };
       this.getAuthority(1);
+      this.$refs.ruleForm.clearValidate();
     },
     getGeographyList() {
       return getGeographyList().then((res) => {
@@ -294,6 +296,16 @@ export default {
             value: item.roleId,
           });
         });
+        this.formInline.roleId = this.authorityOptions[0].value;
+        this.formInline.roleIds = [];
+        this.rules.roleId = [
+          {
+            required: true,
+            message: "please set authority",
+            trigger: "change",
+          },
+        ];
+        this.rules.roleIds = null;
       } else if (nv == 2) {
         this.equipmentUserAuthorityList.map((item) => {
           this.authorityOptions.push({
@@ -301,8 +313,18 @@ export default {
             value: item.roleId,
           });
         });
+        this.formInline.roleId = "";
+        this.formInline.roleIds = [this.authorityOptions[0].value];
+        this.rules.roleIds = [
+          {
+            required: true,
+            message: "please set authority",
+            trigger: "change",
+          },
+        ];
+        this.rules.roleId = null;
       }
-      this.formInline.roleIds = [this.authorityOptions[0].value];
+      this.$refs.ruleForm.clearValidate();
       console.log("this.authorityOptions", this.authorityOptions);
     },
     getSystemUserAuthorityList() {
@@ -331,11 +353,10 @@ export default {
     },
     handleNodeClick(data) {
       console.log("data", data);
-      // districtName id
       this.$set(
         this.formInline,
         "jurisdictionId",
-        `${data.districtName} , ${data.id}`
+        `${data.districtName} , ${data.idNumber}`
       );
     },
     cancel() {
@@ -362,7 +383,11 @@ export default {
       addUser(this.formInline).then((res) => {
         console.log("res", res);
         if (res.code == 200) {
-          this.$router.push({ path: "/SystemAdministration" });
+          //判断是回系统管理页还是设备管理页
+          let { info } = this.$route.query;
+          if (info == "toAddEquipmentUser")
+            this.$router.push({ path: "/EquipmentManagement/Add" });
+          else this.$router.push({ path: "/SystemAdministration" });
         }
       });
     },
@@ -376,6 +401,11 @@ export default {
     await this.getSystemUserAuthorityList();
     await this.getEquipmentUserAuthorityList();
     this.initForm();
+    if (this.$route.query) {
+      let { info } = this.$route.query;
+      console.log("info", info);
+      if (info == "toAddEquipmentUser") this.formInline.userType = 2;
+    }
   },
   mounted() {
     this.$nextTick(function () {});

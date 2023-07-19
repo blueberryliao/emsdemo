@@ -1,22 +1,14 @@
 <template>
   <div class="add-equipment">
     <div class="princict-tree">
-      <!-- <div class="filter">
-        <el-input
-          placeholder=""
-          v-model="filterText"
-          clearable
-          suffix-icon="el-icon-search"
-        >
-        </el-input>
-      </div> -->
-
       <el-tree
         class="filter-tree"
         :data="treeData"
         :props="defaultProps"
         default-expand-all
+        node-key="id"
         :filter-node-method="filterNode"
+        highlight-current
         ref="tree"
         @node-click="handleNodeClick"
       >
@@ -33,11 +25,18 @@
       >
         <div class="top">
           <div class="title-box">
-            <div class="title">Basic Information</div>
-            <div class="op">
-              scan the bar code on the device to quickly input information
-              <i class="el-icon-full-screen"></i>
+            <div class="title">
+              Basic Information
+              <span class="scan">
+                Scan the bar code on the device to quickly input information
+                <i class="el-icon-full-screen"></i
+              ></span>
             </div>
+
+            <!-- <div class="op">
+              Scan the bar code on the device to quickly input information
+              <i class="el-icon-full-screen"></i>
+            </div> -->
           </div>
 
           <el-row>
@@ -59,7 +58,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="Device Id" prop="deviceId">
+              <el-form-item label="Device ID" prop="deviceId">
                 <el-input
                   v-model="formInline.deviceId"
                   style="width: 300px"
@@ -177,9 +176,11 @@
               >
               <el-col :span="12">
                 View period
-                <!-- <span class="empty-block">**</span>
-                s -->
-                <input class="empty-block" v-model="input1" />s
+                <input
+                  class="empty-block"
+                  v-model="input1"
+                  :readonly="!checked1"
+                />s
               </el-col>
             </el-row>
             <el-row class="row">
@@ -198,12 +199,12 @@
             </el-row>
             <el-row class="row">
               <el-col :span="5" class="start-space">
-                <el-radio v-model="radio" label="1"
-                  >Reject Invalid ballot</el-radio
+                <el-radio v-model="radio" label="1" :disabled="!checked3"
+                  >Reject invalid ballot</el-radio
                 >
               </el-col>
               <el-col :span="12">
-                <el-radio v-model="radio" label="2"
+                <el-radio v-model="radio" label="2" :disabled="!checked3"
                   >Put invalid ballot in secondary box</el-radio
                 >
               </el-col>
@@ -222,6 +223,7 @@
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
+                    :disabled="!checked4"
                   >
                   </el-option>
                 </el-select>
@@ -238,6 +240,7 @@
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
+                    :disabled="!checked4"
                   >
                   </el-option>
                 </el-select>
@@ -253,7 +256,11 @@
                 Voting period
                 <!-- <span class="empty-block">**</span>
                 s -->
-                <input class="empty-block" v-model="input2" />s
+                <input
+                  class="empty-block"
+                  v-model="input2"
+                  :readonly="!checked5"
+                />s
               </el-col>
             </el-row>
             <el-row class="row"
@@ -270,7 +277,11 @@
               <el-col :span="12">
                 Votes
                 <!-- <span class="empty-block">**</span> -->
-                <input class="empty-block" v-model="input4" />
+                <input
+                  class="empty-block"
+                  v-model="input4"
+                  :readonly="!checked6"
+                />
               </el-col>
             </el-row>
           </div>
@@ -404,12 +415,22 @@ export default {
 
   methods: {
     getGeographyList() {
-      getGeographyList().then((res) => {
+      return getGeographyList().then((res) => {
         console.log("res", res);
         if (res.code == 200) {
           this.geographyList = res.data;
           this.treeData = handleTree(this.geographyList);
           console.log("tree", this.treeData);
+          this.$nextTick(() => {
+            if (this.isEdit) {
+              let { jurisdiction } = this.$route.query;
+              //设置当前树选中节点
+              console.log("jurisdiction", jurisdiction);
+              let currentNodeId = jurisdiction.split(",")[1].trim();
+              console.log(currentNodeId);
+              this.$refs.tree.setCurrentKey(currentNodeId);
+            }
+          });
         }
       });
     },
@@ -447,7 +468,8 @@ export default {
               value: item.roleName.split(" ")[0],
             });
           });
-          this.formInline.deviceType = this.deviceTypeOptions[0].value;
+          if (!isEdit)
+            this.formInline.deviceType = this.deviceTypeOptions[0].value;
         }
       });
     },
@@ -458,7 +480,10 @@ export default {
     },
 
     goToAddUser() {
-      this.$router.push({ path: "/SystemAdministration/User" });
+      this.$router.push({
+        path: "/SystemAdministration/User",
+        query: { info: "toAddEquipmentUser" },
+      });
     },
     //删除用户的绑定关系
     handleClose(val) {
@@ -474,7 +499,7 @@ export default {
       this.$set(
         this.formInline,
         "jurisdiction",
-        `${data.districtName} , ${data.id}`
+        `${data.districtName} , ${data.idNumber}`
       );
     },
     cancel() {
@@ -540,10 +565,15 @@ export default {
         this.isEdit = true;
         this.formInline = this.$route.query;
         let { sysUserList } = this.$route.query;
-        console.log("sysUserList", sysUserList);
+        // console.log("sysUserList", sysUserList);
         this.selectedUserList = sysUserList.map((equip) => {
           return equip.userName;
         });
+        // //设置当前树选中节点
+        // console.log("jurisdiction", jurisdiction);
+        // let currentNodeId = jurisdiction.split(",")[1].trim();
+        // console.log(currentNodeId);
+        // this.$refs.tree.setCurrentKey(currentNodeId);
       } else {
         this.isEdit = false;
       }
@@ -650,7 +680,7 @@ export default {
         position: absolute;
         width: 600px;
         font-size: 14px;
-        left: 200px;
+        left: 250px;
         top: 2px;
         color: #999;
         .add-user {
@@ -659,6 +689,16 @@ export default {
           cursor: pointer;
           text-decoration: underline;
         }
+      }
+      .scan {
+        position: absolute;
+        width: 600px;
+        font-size: 14px;
+        left: 250px;
+        top: 2px;
+        color: #999;
+
+        cursor: not-allowed;
       }
       .op {
         color: #999;

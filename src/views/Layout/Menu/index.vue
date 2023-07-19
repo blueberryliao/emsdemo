@@ -1,11 +1,13 @@
 <template>
   <div class="menu">
     <el-menu
-      default-active="$route.path"
+      default-active="/ElectionConfiguration/ElectionEvents"
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose"
+      :default-openeds="openeds"
       router
+      highlight-current
     >
       <div v-for="item in MenuList" :key="item.index">
         <el-submenu
@@ -55,6 +57,7 @@ export default {
     return {
       monShow: false,
       MenuList: [],
+      openeds: ["/ElectionConfiguration"],
     };
   },
   //   computed: {
@@ -69,13 +72,17 @@ export default {
   //       },
   //     },
   //   },
-  //   watch: {
-  //     //观察
-  //     $route: "routeHandle",
-  //     keywordSearch: {
-  //       handler(nv) {},
-  //     },
-  //   },
+  watch: {
+    //观察
+    $route: {
+      handler(nv) {
+        console.log("nv", nv.path);
+      },
+    },
+    // keywordSearch: {
+    //   handler(nv) {},
+    // },
+  },
   methods: {
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
@@ -105,6 +112,8 @@ export default {
   box-sizing: border-box;
 }
 .menu {
+  height: 100%;
+  overflow-y: auto;
   .title {
     padding: 20px 0;
   }
@@ -115,5 +124,9 @@ export default {
     border-right: 2px solid #3e82f4 !important;
     // background-color: #e9f6fe;
   }
+}
+/*设置二级菜单选中时 父菜单字体颜色也改变*/
+::v-deep .el-submenu.is-active .el-submenu__title {
+  color: #3e82f4 !important;
 }
 </style>

@@ -1,6 +1,9 @@
 <template>
   <div class="voter-case">
-    <div class="princict-tree">
+    <div class="princict-tree" :class="{ 'tree-collapse': iscCollapsed }">
+      <el-checkbox v-model="checkedAll" class="all" @change="handleCheck"
+        >All</el-checkbox
+      >
       <el-tree
         :data="treeData"
         class="filter-tree"
@@ -8,14 +11,29 @@
         default-expand-all
         :filter-node-method="filterNode"
         ref="tree"
+        highlight-current
         @node-click="handleNodeClick"
       >
       </el-tree>
     </div>
-    <div class="voter-list">
+    <div class="voter-list" :class="{ collapse: iscCollapsed }">
       <div class="header">
         <div class="header-left">
           <el-button-group>
+            <el-button
+              type="primary"
+              icon="el-icon-s-unfold"
+              size="small"
+              @click="changeCollapse"
+              v-if="iscCollapsed"
+            ></el-button>
+            <el-button
+              type="primary"
+              icon="el-icon-s-fold"
+              size="small"
+              v-else
+              @click="changeCollapse"
+            ></el-button>
             <el-button
               type="primary"
               icon="el-icon-bottom"
@@ -302,6 +320,9 @@ export default {
         children: "children",
         label: "districtName",
       },
+      checkedAll: true,
+      currentNode: null,
+      currentNodeId: "",
       name: "",
       documentNumber: "",
       jurisdiction: "",
@@ -316,6 +337,7 @@ export default {
       timer: null,
       systemUserAuthorityList: [],
       equipmentUserAuthorityList: [],
+      iscCollapsed: false,
     };
   },
   watch: {},
@@ -336,15 +358,33 @@ export default {
     },
     handleNodeClick(data) {
       console.log("data", data);
+      this.checkedAll = false;
+      this.currentNode = data;
+      this.currentNodeId = data.id;
       this.jurisdiction = data.districtName + "," + data.id;
       this.handleQuery();
+    },
+    handleCheck() {
+      console.log("this.checkedAll", this.checkedAll);
+      //判断，如果是全选，则要取消树的勾选，与树互斥
+      this.$refs.tree.setChecked(this.currentNode, false); // 取消当前节点的选中状态
+      this.resetTree();
+      //获取列表
+      this.getVoterList();
+    },
+    resetTree() {
+      let _treeData = JSON.parse(JSON.stringify(this.treeData));
+      this.treeData = [];
+      this.treeData = _treeData;
     },
     getVoterList() {
       this.loading = true;
       let query = {
         fullName: this.name,
         documentNumber: this.documentNumber,
-        jurisdiction: this.jurisdiction,
+        jurisdiction: this.checkedAll ? "" : this.jurisdiction,
+        pageSize: this.pageSize,
+        pageNum: this.pageNum,
       };
       getVoterList(query).then((res) => {
         if (res.code == 200) {
@@ -431,6 +471,10 @@ export default {
             .catch(() => {});
         });
     },
+
+    changeCollapse() {
+      this.iscCollapsed = !this.iscCollapsed;
+    },
   },
   created() {
     this.getGeographyList();
@@ -449,18 +493,30 @@ export default {
   height: 100%;
   width: 100%;
   display: flex;
+
   .princict-tree {
     width: 260px;
     height: 100%;
     border-right: 1px solid #d4d4d7;
     padding: 10px 0;
+    transition: width 0.3s ease;
+    overflow-y: auto;
     .filter {
       //   width: 90%;
     }
+    .all {
+      color: #606266;
+      font-size: 14px;
+      padding-left: 20px;
+    }
+  }
+  .tree-collapse {
+    width: 0;
   }
   .voter-list {
     width: calc(100% - 260px);
     padding-bottom: 20px;
+    transition: width 0.3s ease;
     .header {
       background-color: #d4d4d7;
       height: 60px;
@@ -528,6 +584,9 @@ export default {
     .page {
       height: 32px;
     }
+  }
+  .collapse {
+    width: 100%;
   }
   ::v-deep .el-tree-node:focus > .el-tree-node__content {
     border-right: 2px solid #3e82f4 !important;
