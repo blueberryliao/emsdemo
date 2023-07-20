@@ -1,14 +1,25 @@
 <template>
   <div class="result">
-    <div v-if="isFullscreen" class="fullscreen-title panorama-flex">
+    <div v-if="isFullscreen" class="header">
+      <!-- <div class="left-btn"></div> -->
       <!-- <img
-        src="@/assets/imgs/datacontrol@2x.png"
+        src="@/assets/img/datacontrol@2x.png"
         alt=""
         @click="goToAllTaskView"
       /> -->
-      <h1>INTEGELECT ELCTION</h1>
+      <div class="fullscreen-title">
+        <img src="@/assets/img/titlebg.png" alt="" />
+        <div>INTEGELECT ELECTION</div>
+      </div>
+      <el-button
+        type="primary"
+        icon="el-icon-close"
+        size="small"
+        class="return-btn"
+        @click="cancelFullScreen"
+      ></el-button>
       <!-- <img
-        src="@/assets/imgs/cancelfullscreen@2x.png"
+        src="@/assets/img/cancelfullscreen@2x.png"
         alt=""
         @click="cancelFullScreen"
       /> -->
@@ -23,24 +34,37 @@
           </div>
         </div>
         <div class="vote-case">
-          <div class="number">
-            <div class="statistic-item">
-              <div class="statistic-title">{{ title1 }}</div>
-              <div class="statistic-content">{{ value1 }}</div>
+          <div class="number-case">
+            <div class="btn">
+              <el-button
+                type="primary"
+                size="small"
+                @click="toFullscreen"
+                v-show="!isFullscreen"
+                >Fullscreen</el-button
+              >
             </div>
-            <div class="statistic-item">
-              <div class="statistic-title">{{ title2 }}</div>
-              <div class="statistic-content">{{ value2 }}</div>
-            </div>
-            <div class="statistic-item">
-              <div class="statistic-title">{{ title3 }}</div>
-              <div class="statistic-content">{{ value3 }}</div>
-            </div>
-            <div class="statistic-item">
-              <div class="statistic-title">{{ title4 }}</div>
-              <div class="statistic-content">{{ value4 }}</div>
+
+            <div class="number">
+              <div class="statistic-item">
+                <div class="statistic-title">{{ title1 }}</div>
+                <div class="statistic-content">{{ value1 }}</div>
+              </div>
+              <div class="statistic-item">
+                <div class="statistic-title">{{ title2 }}</div>
+                <div class="statistic-content">{{ value2 }}</div>
+              </div>
+              <div class="statistic-item">
+                <div class="statistic-title">{{ title3 }}</div>
+                <div class="statistic-content">{{ value3 }}</div>
+              </div>
+              <div class="statistic-item">
+                <div class="statistic-title">{{ title4 }}</div>
+                <div class="statistic-content">{{ value4 }}</div>
+              </div>
             </div>
           </div>
+
           <div class="vote-bar">
             <div class="title">
               The election results for the candidates' votes
@@ -129,7 +153,7 @@
             <i class="el-icon-full-screen" />
           </div>
           <div class="lists">
-            <div class="list-row" v-for="item in barOpt">
+            <div class="list-row" v-for="item in barOpt" :key="item.name">
               <div class="list-img">
                 <img src="../../../assets//img/photo.jpg" alt="" />
               </div>
@@ -141,12 +165,15 @@
         </div>
       </div>
     </div>
+
+    <!-- <div class="bottom-line"></div> -->
   </div>
 </template>
 
 <script>
 import * as echarts from "echarts";
 import { graphic } from "echarts";
+import screenfull from "screenfull";
 export default {
   //   components: {
   //     //导入的组件
@@ -195,11 +222,8 @@ export default {
               },
             },
             itemStyle: {
-              //   //地图区域的多边形 图形样式。
+              //地图区域的多边形 图形样式。
               normal: {
-                //     borderWidth: 1, //区域边框宽度
-                //     borderColor: "#0090FF", //区域边框颜色
-                //     areaColor: "#B5DAFF", //区域颜色
                 opacity: 0.9,
               },
               emphasis: {
@@ -208,7 +232,6 @@ export default {
               },
             },
             zoom: 1.1, //放大比例
-            // aspectScale: 1 //长宽比
             //设置默认显示区域
             data: [
               {
@@ -469,26 +492,7 @@ export default {
       str >= 10 ? (num = str) : (num = "0" + str);
       return num;
     },
-    //全屏
-    toFullscreen() {
-      // this.$router.push({ path: '/overviewPanel' });
-      // screenfull.request(); // 全屏
-      // screenfull.exit(); // 退出全屏
-      // screenfull.toggle(); // 全屏切换
-      // screenfull.isFullscreen; // 布尔值——当前页面是否全屏
-      // screenfull.isEnabled; // 布尔值——当前浏览器是否支持全屏
-      this.isFullscreen = true;
-      screenfull.toggle(this.$refs.inner);
-    },
-    //退出全屏
-    cancelFullScreen() {
-      if (this.$route.query.isFullscreen == "true") {
-        this.$router.push({
-          path: "/pageMenu",
-        });
-      }
-      screenfull.exit();
-    },
+
     drawMapChart(opt) {
       console.log(opt);
       //注册地图
@@ -519,6 +523,30 @@ export default {
       this.lineChart.setOption(opt);
       this.lineChart.resize();
     },
+    //全屏
+    toFullscreen() {
+      this.$router.push({ path: "/overviewPanel" });
+      // screenfull.request(); // 全屏
+      // screenfull.exit(); // 退出全屏
+      // screenfull.toggle(); // 全屏切换
+      // console.log(screenfull.isFullscreen); // 布尔值——当前页面是否全屏
+      // screenfull.isEnabled; // 布尔值——当前浏览器是否支持全屏
+      this.isFullscreen = true;
+      screenfull.toggle(this.$refs.inner);
+      this.mapChart.resize();
+      this.barChart.resize();
+      this.lineChart.resize();
+    },
+    //退出全屏
+    cancelFullScreen() {
+      if (this.$route.name == "overviewPanel") {
+        this.$router.push({
+          path: "/BallotCounting/DataCenter",
+        });
+      }
+      this.isFullscreen = false;
+      screenfull.exit();
+    },
   },
   watch: {
     toRender(newV) {
@@ -528,28 +556,52 @@ export default {
       this.lineChart.resize();
     },
   },
-  created() {},
+  created() {
+    console.log("this.$route", this.$route);
+    let { name } = this.$route;
+    if (name == "overviewPanel") {
+      this.isFullscreen = true;
+    }
+  },
   mounted() {
     //时钟每秒变化一次
     setInterval(this.fnDate, 1000); //注意第一个参数是函数表达式，不要加（）
     //全屏
     window.addEventListener("fullscreenchange", (e) => {
+      window.alert = function () {
+        return false;
+      };
       if (screenfull.isFullscreen) {
-        // console.log("screenfull.isFullscreen", screenfull.isFullscreen);
         this.isFullscreen = true;
       } else {
-        // console.log("screenfull.isFullscreen", screenfull.isFullscreen);
         this.isFullscreen = false;
       }
       //重绘echart图
       this.$nextTick(() => {
         this.barChart.resize();
         this.mapChart.resize();
+        this.lineChart.resize();
       });
     });
-    this.drawMapChart(this.mapOption);
-    this.drawBarChart(this.barOption);
-    this.drawLineChart(this.lineOption);
+    this.$nextTick(() => {
+      this.drawBarChart(this.barOption);
+      this.drawLineChart(this.lineOption);
+      this.drawMapChart(this.mapOption);
+    });
+    //禁止esc
+    document.onkeydown = function (evt) {
+      // alert("1");
+      if (evt.keyCode === 27 || evt.keyCode === 122) {
+        evt.preventDefault();
+        return false;
+      }
+      if (evt.key === "Escape") {
+        evt.preventDefault();
+        this.$router.push({
+          path: "/BallotCounting/DataCenter",
+        });
+      }
+    };
   },
 };
 </script>
@@ -561,7 +613,68 @@ export default {
 .result {
   width: 100%;
   height: 100%;
+  position: relative;
   // height: calc(100% - 40px);
+  .header {
+    height: 140px;
+    width: 100%;
+    position: relative;
+  }
+  .return-btn {
+    position: absolute;
+    right: 2%;
+    top: 15%;
+    cursor: pointer;
+  }
+  .left-btn {
+    position: absolute;
+    left: 2%;
+    top: 15%;
+    padding: 4px 15px;
+    background-color: #375788;
+    font-size: 18px;
+    color: #0e213e;
+    text-align: center;
+    line-height: 1; //根据该元素本身的字体大小 设置行高
+    display: inline-block;
+    cursor: pointer;
+    min-width: 80px;
+    height: 40px;
+    width: 160px;
+    transform: skew(50deg);
+    &:hover {
+      filter: alpha(Opacity=70);
+      opacity: 0.7;
+    }
+  }
+  .fullscreen-title {
+    position: relative;
+    img {
+      // text-align: center;
+      display: block;
+      margin: 0 auto;
+      height: 85px;
+      opacity: 0.85;
+    }
+    div {
+      font-size: 47px;
+      // color: #f0f0f0;
+      color: #fff;
+      line-height: 80px;
+      // margin: 0 auto;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+    }
+    // background-image: url(~@/assets/img/titlebg.png);
+    // zoom: 1;
+    // opacity: 0.5;
+    // background-repeat: no-repeat;
+    // background-position: center;
+    // background-size: contain;
+    // text-align: center;
+  }
   .inner {
     width: 100%;
     height: 100%;
@@ -573,10 +686,8 @@ export default {
       display: flex;
       .map {
         width: 30%;
-        height: 100%;
+        // height: 100%;
         border: 1px solid #d4d4d7;
-        // width: 30%;
-        // height: 70%;
         position: relative;
         .map-chart {
           width: 100%;
@@ -587,10 +698,17 @@ export default {
         width: 70%;
         height: 100%;
         // border: 1px solid #d4d4d7;
-        .number {
+
+        .number-case {
           height: 20%;
           display: flex;
-          justify-content: flex-end;
+          justify-content: space-between;
+          align-items: center;
+          padding-left: 20px;
+          .number {
+            display: flex;
+            justify-content: flex-end;
+          }
           .statistic-item {
             height: 100%;
             width: 100px;
@@ -681,7 +799,7 @@ export default {
       // border: 1px solid #d4d4d7;
       display: flex;
       .bottom-left-case {
-        width: 56%;
+        width: 60%;
         border: 1px solid #d4d4d7;
         margin-right: 20px;
         position: relative;
@@ -702,7 +820,7 @@ export default {
       }
       .bottom-right-case {
         height: 100%;
-        width: 44%;
+        width: 40%;
         border: 1px solid #d4d4d7;
         position: relative;
         padding-top: 40px;
@@ -710,9 +828,11 @@ export default {
           height: 100%;
         }
         .list-row {
-          height: 20%;
+          height: 17%;
           display: flex;
           align-items: center;
+          background-color: #f0f0f0;
+          margin: 10px;
           // border: 1px springgreen solid;
           .list-img {
             height: 100%;
@@ -778,6 +898,11 @@ export default {
         color: #0090ff;
       }
     }
+  }
+  .bottom-line {
+    height: 5px;
+    width: 100%;
+    border-bottom: 2px solid 375788;
   }
 }
 </style>
