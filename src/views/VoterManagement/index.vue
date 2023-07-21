@@ -361,7 +361,7 @@ export default {
       this.checkedAll = false;
       this.currentNode = data;
       this.currentNodeId = data.id;
-      this.jurisdiction = data.districtName + "," + data.id;
+      this.jurisdiction = data.districtName + "," + data.idNumber;
       this.handleQuery();
     },
     handleCheck() {

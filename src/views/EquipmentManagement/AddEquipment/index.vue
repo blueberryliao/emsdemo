@@ -442,10 +442,14 @@ export default {
       };
       return getUserList(query).then((res) => {
         if (res.code == 200) {
+          console.log(
+            "%c susanlog 🌈 ",
+            "color:hotpink;font-weight:bold;background-color:black"
+          );
           console.log("res.users**", res.rows);
-          //如果是新建，默认选中用户为第一个
           if (res.rows.length > 0) {
             this.users = res.rows;
+            //如果是新建，默认选中用户为第一个
             if (!this.isEdit) this.selectedUserList = [this.users[0].userName];
           }
         }
@@ -468,7 +472,7 @@ export default {
               value: item.roleName.split(" ")[0],
             });
           });
-          if (!isEdit)
+          if (!this.isEdit)
             this.formInline.deviceType = this.deviceTypeOptions[0].value;
         }
       });
