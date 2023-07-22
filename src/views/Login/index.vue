@@ -80,7 +80,8 @@
 <script>
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
-import { login } from "@/api/login";
+import { login, getInfo } from "@/api/login";
+
 export default {
   name: "Login",
   data() {
@@ -90,7 +91,6 @@ export default {
         username: "admin",
         password: "admin123",
         rememberMe: false,
-        // code: "",
         uuid: "",
       },
       loginRules: {
@@ -104,24 +104,15 @@ export default {
         password: [
           { required: true, trigger: "blur", message: "please input password" },
         ],
-        // code: [{ required: true, trigger: "change", message: "请输入验证码" }],
       },
       loading: false,
       // 验证码开关
-      // captchaEnabled: true,
       // 注册开关
       register: true,
       redirect: undefined,
     };
   },
-  watch: {
-    // $route: {
-    //   handler: function (route) {
-    //     this.redirect = route.query && route.query.redirect;
-    //   },
-    //   immediate: true,
-    // },
-  },
+  watch: {},
   created() {
     this.getCookie();
   },
@@ -161,8 +152,9 @@ export default {
               console.log("r", res);
               if (res.code == "200") {
                 this.loading = false;
-                // this.$router.push({ path: this.redirect || "/" });
                 sessionStorage.setItem("token", res.token);
+                this.getInfo();
+
                 this.$router.push({
                   path: "/ElectionConfiguration/ElectionEvents",
                 });
@@ -171,17 +163,12 @@ export default {
             .catch((e) => {
               this.loading = false;
             });
-          // console.log("res", res);
-
-          // this.$store
-          //   .dispatch("Login", this.loginForm)
-          //   .then(() => {
-          //     this.$router.push({ path: this.redirect || "/" }).catch(() => {});
-          //   })
-          //   .catch(() => {
-          //     this.loading = false;
-          //   });
         }
+      });
+    },
+    getInfo() {
+      getInfo().then((res) => {
+        console.log("getInfo res", res);
       });
     },
   },

@@ -109,7 +109,7 @@
 <script>
 import Pagination from "@/components/Pagination/index.vue";
 import { getGeographyList } from "@/api/geography.js";
-import { handleTree } from "@/utils/ruoyi";
+import { handleTree } from "@/utils/custom";
 export default {
   components: { Pagination },
   //   components: {

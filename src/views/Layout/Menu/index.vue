@@ -9,7 +9,7 @@
       router
       highlight-current
     >
-      <div v-for="item in MenuList" :key="item.index">
+      <div v-for="item in authMenuList" :key="item.index">
         <el-submenu
           :index="item.path"
           :disabled="!item.isDeveloped"
@@ -44,10 +44,9 @@
 </template>
 
 <script>
-// import Request from "@/common/net/request.js";
-// import Tab from "@/components/Tab/tabIncome.vue";
-// const request = new Request();
+import { getRouters } from "@/api/menu";
 import MenuList from "./menu";
+import { handleTree } from "@/utils/custom";
 export default {
   //   components: {
   //     //导入的组件
@@ -57,6 +56,7 @@ export default {
     return {
       monShow: false,
       MenuList: [],
+      authMenuList: [],
       openeds: ["/ElectionConfiguration"],
     };
   },
@@ -84,6 +84,25 @@ export default {
     // },
   },
   methods: {
+    getMenu() {
+      getRouters().then((res) => {
+        //获得当前权限的一级菜单
+        console.log("getMenu res", res);
+        //this.MenuList 是所有当前系统开放的菜单
+        //遍历权限菜单，与MenuList相同的，放进当前菜单
+        if (res.code == "200") {
+          res.data.map((i) => {
+            this.MenuList.map((j) => {
+              if (i.meta.title == j.name) {
+                this.authMenuList.push(j);
+              }
+            });
+          });
+        }
+
+        console.log("this.authMenuList", this.authMenuList);
+      });
+    },
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
     },
@@ -97,7 +116,11 @@ export default {
       });
     },
   },
-  created() {},
+  created() {
+    this.MenuList = MenuList;
+    console.log("this.MenuList", this.MenuList);
+    this.getMenu();
+  },
   mounted() {
     this.$nextTick(function () {
       this.MenuList = MenuList;

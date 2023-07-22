@@ -153,7 +153,7 @@
 
 <script>
 import Pagination from "@/components/Pagination/index.vue";
-import { handleTree } from "@/utils/ruoyi";
+import { handleTree } from "@/utils/custom";
 import { getContestList } from "@/api/contest.js";
 export default {
   components: { Pagination },

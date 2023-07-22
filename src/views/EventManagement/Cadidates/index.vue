@@ -100,12 +100,10 @@
           min-width="8%"
           align="center"
         >
-          <!-- <template slot-scope="scope">
-            <span v-if="scope.row.password">
-              {{ scope.row.password }}
-            </span>
-            <span v-else> ****** </span>
-          </template> -->
+          <template slot-scope="scope">
+            <span v-if="scope.row.gender == 0"> Female </span>
+            <span v-else> Male </span>
+          </template>
         </el-table-column>
         <el-table-column
           prop="electionEvent"

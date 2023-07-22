@@ -35,14 +35,16 @@
         </div>
         <div class="btn">
           <div class="btn-left">
-            <el-button type="primary" size="small">Submit</el-button>
+            <el-button type="primary" size="small" @click="toSubmit"
+              >Submit</el-button
+            >
           </div>
           <div class="btn-right">
             <el-button-group>
-              <el-button icon="el-icon-arrow-left" size="small"
+              <!-- <el-button icon="el-icon-arrow-left" size="small"
                 >Previous</el-button
-              >
-              <el-button type="primary" size="small"
+              > -->
+              <el-button type="primary" size="small" @click="nextBallot"
                 >Next<i class="el-icon-arrow-right el-icon--right"></i
               ></el-button>
             </el-button-group>
@@ -59,54 +61,69 @@
             <div class="contest">Contest</div>
             <div class="contest-btn">
               <el-button-group>
-                <el-button icon="el-icon-arrow-left" size="small"
+                <!-- <el-button
+                  icon="el-icon-arrow-left"
+                  size="small"
+                  @click="handleContestPrevious"
+                  :disabled="currenIndex == 0"
                   >Previous</el-button
-                >
-                <el-button type="primary" size="small"
+                > -->
+                <el-button
+                  type="primary"
+                  size="small"
+                  @click="handleContestNext"
+                  :disabled="
+                    currenIndex == adjudicatorList.length - 1 ||
+                    currentContest == null
+                  "
                   >Next<i class="el-icon-arrow-right el-icon--right"></i
                 ></el-button>
               </el-button-group>
             </div>
           </div>
           <div class="contest-content">
-            <div class="contest-title">{{ currentContest.dutiesName }}</div>
-            <div class="contest-subtitle">Vote for One</div>
-            <div class="contest-opt">
-              <!-- 如果是单选，el-radio -->
-              <el-radio-group v-model="radio" v-if="false">
-                <div
-                  class="radio"
-                  v-for="item in currentContest.candidateDataList"
-                  :key="item.candidateIndex"
+            <div class="has-contest" v-if="currentContest">
+              <div class="contest-title">{{ currentContest.dutiesName }}</div>
+              <div class="contest-subtitle">
+                Vote for {{ currentContest.numberOfCandidates }}
+              </div>
+              <div class="contest-opt">
+                <el-checkbox-group
+                  v-model="checkList"
+                  @change="handleCheckboxChange"
                 >
-                  <el-radio :label="item.candidateIndex" class="opt-item">{{
-                    item.candidateName
-                  }}</el-radio>
-                </div>
-              </el-radio-group>
-              <!-- 如果是多选，el-checkbox -->
-              <el-checkbox-group
-                v-model="checkList"
-                @change="handleCheckboxChange"
-                v-esle
-              >
-                <div
-                  v-for="item in currentContest.candidateDataList"
-                  :key="item.candidateIndex"
-                >
-                  <el-checkbox
-                    :label="item.candidateName"
-                    :checked="item.status == 'Approve'"
-                  ></el-checkbox>
-                </div>
-                <!-- <div><el-checkbox label="复选框 B"></el-checkbox></div>
-                <div><el-checkbox label="复选框 C"></el-checkbox></div> -->
-              </el-checkbox-group>
+                  <div
+                    v-for="item in currentContest.candidateDataList"
+                    :key="item.id"
+                  >
+                    <el-checkbox
+                      :label="item.id"
+                      :checked="item.status == 'Approve'"
+                      >{{ item.candidateName }}</el-checkbox
+                    >
+                  </div>
+                </el-checkbox-group>
+              </div>
+            </div>
+            <div class="no-contest" v-else>
+              All valid.
+              <i class="el-icon-check valid green"></i>
             </div>
           </div>
           <div class="contest-bottom">
-            <el-button size="small">Back</el-button>
-            <el-button type="primary" size="small">Save</el-button>
+            <el-button
+              size="small"
+              @click="undo"
+              :disabled="currentContest == null"
+              >Undo</el-button
+            >
+            <el-button
+              type="primary"
+              @click="toSave"
+              size="small"
+              :disabled="currentContest == null"
+              >Save</el-button
+            >
           </div>
         </div>
         <div class="detaile-case">
@@ -145,12 +162,18 @@
 
 <script>
 import imgUrl from "@/assets/img/ballot.jpg";
-import { getBallotInfo } from "@/api/ballot";
+import {
+  getBallotInfo,
+  saveBallot,
+  suspendBallot,
+  saveContest,
+  suspendContest,
+} from "@/api/ballot";
 export default {
   data() {
     return {
       info: null, //从后台获取的对象
-      adjudicatorList: null, //右上框数据
+      adjudicatorList: [], //右上框数据
       duties: null, //右下框数据
       redBlocks: [], //红框
       // count: 0,
@@ -196,12 +219,78 @@ export default {
     },
     showWidth: {
       get() {
-        return this.pixelWidth / this.rate;
+        return Math.round(this.pixelWidth / this.rate);
       },
     },
   },
 
   methods: {
+    /** 选票信息更新 所有其他信息作相应更新 */
+    async init() {
+      this.info = null; //从后台获取的对象
+      this.adjudicatorList = []; //右上框数据
+      this.duties = null; //右下框数据
+      this.redBlocks = [];
+      this.currentContest = null;
+      this.currenIndex = 0;
+      this.checkList = [];
+      //图片区域
+      this.imgUrl = "";
+      this.ballotCaseDom = null;
+      this.canvasDom = null; //canvasDom 对象
+      this.myCanvas = null; // canvas对象
+      this.myImgDom = null;
+      this.pixelWidth = 0; //图片实际的像素宽度
+      this.pixelHeight = 0;
+      this.showHeight = 0;
+      //获取选票的实际像素尺寸
+      await this.getInfo();
+      // debugger;
+      this.pixelWidth = this.info.maxWidth;
+      this.pixelHeight = this.info.maxHeight;
+      //右下区域数据
+      this.duties = this.info.duties;
+      //右上区域数据
+      this.adjudicatorList = this.info.duties.filter((i) => {
+        return i.status == "invalid";
+      });
+      console.log(this.adjudicatorList);
+      if (this.adjudicatorList.length > 0) {
+        this.currentContest = this.adjudicatorList[0];
+        this.currenIndex = 0;
+      }
+      console.log("this.currentContest", this.currentContest);
+      console.log("this.currenIndex", this.currenIndex);
+      //获取红框的坐标尺寸
+      this.redBlocks = [];
+      if (this.adjudicatorList.length > 0) {
+        this.adjudicatorList.map((i) => {
+          this.redBlocks.push({
+            x: i.x,
+            y: i.y,
+            width: i.width,
+            height: i.height,
+          });
+        });
+        console.log(this.redBlocks);
+      }
+
+      //给图片地址赋值
+      this.imgUrl = `http://36.41.69.47:8899/prod-api/profile/upload${this.info.imgUrl}`;
+      console.log("this.imgUrl", this.imgUrl);
+      this.$nextTick(function () {
+        //获取绘图相关DOM及canvas对象
+        this.canvasDom = document.getElementById("myCanvas");
+        this.ballotCaseDom = document.getElementById("ballotCase");
+        console.log("this.ballotCaseDom", this.ballotCaseDom);
+        this.myImgDom = document.getElementById("myImg");
+        this.myCanvas = this.canvasDom.getContext("2d");
+        //获取图片视高 不明原因，每次重绘都会增加16px 所以这里剪去16px
+        this.showHeight = this.ballotCaseDom.scrollHeight - 16;
+        //绘图
+        this.drawImage();
+      });
+    },
     /** 搜索按钮操作 */
     handleQuery() {
       clearTimeout(this.timer);
@@ -210,20 +299,23 @@ export default {
         // this.getInfo();
       }, 300);
     },
-
     handleCheckboxChange() {
       console.log("这是list");
       console.log(this.checkList);
+      //实现单选
+      // if (this.checkList.length > 1) {
+      //   this.checkList.splice(0, 1);
+      // }
     },
     /** 获取终端信息 */
     getInfo() {
       let query = {
         id: 1000,
       };
-      return getBallotInfo(query).then((res) => {
+      return getBallotInfo().then((res) => {
         if (res.code == 200) {
           console.log("res.rows", res.data);
-          this.info = res.data;
+          this.info = res.data[0];
         }
       });
     },
@@ -241,7 +333,7 @@ export default {
       //有时也需要设置canvas的视在宽高，即实际显示的宽度和高度，设置方法为：
       this.canvasDom.style.setProperty("width", this.showWidth + "px");
       this.canvasDom.style.setProperty("height", this.showHeight + "px");
-      // this.myImg.src = `${this.imgUrl}`;
+      //绘制底图
       this.myImgDom.onload = () => {
         this.myCanvas.drawImage(
           this.myImgDom,
@@ -250,9 +342,18 @@ export default {
           this.pixelWidth,
           this.pixelHeight
         );
-        this.redBlocks.forEach((element) => {
-          this.drawRedBox(element.x, element.y, element.width, element.height);
-        });
+        console.log("this.myCanvas", this.myCanvas);
+        //只画第一个红框
+        // this.redBlocks.forEach((element) => {
+        this.drawRedBox(
+          this.redBlocks[0].x,
+          this.redBlocks[0].y,
+          this.redBlocks[0].width,
+          this.redBlocks[0].height
+        );
+        // });
+        // this.myCanvas.clearRect(0, 0, this.pixelWidth, this.pixelHeight);
+        console.log("this.myCanvas", this.myCanvas);
       };
     },
     drawRedBox(x, y, w, h) {
@@ -261,51 +362,108 @@ export default {
       this.myCanvas.lineJoin = "round";
       this.myCanvas.strokeRect(x, y, w, h);
     },
+    handleContestPrevious() {
+      if (this.currenIndex == 0) return;
+      this.currenIndex--;
+      console.log("this.currenIndex", this.currenIndex);
+      this.checkList = [];
+      this.currentContest = null;
+      this.currentContest = this.adjudicatorList[this.currenIndex];
+      // this.currentContest.candidateDataList.filter((i) => {
+      //   if (i.status == "Approve") this.checkList.push(i.id);
+      // });
+      console.log("this.checkList", this.checkList);
+      // this.$forceUpdate();
+    },
+    handleContestNext() {
+      if (this.currenIndex == this.adjudicatorList.length - 1) return;
+      this.currenIndex++;
+      // console.log("this.currenIndex", this.currenIndex);
+      // this.checkList = [];
+      // this.currentContest = null;
+      // this.currentContest = this.adjudicatorList[this.currenIndex];
+      // console.log("this.checkList", this.checkList);
+      let data = {
+        id: this.currentContest.id,
+      };
+      suspendContest(data).then((res) => {
+        console.log("res", res);
+        if (res.code == "200") {
+          //重新获取数据
+          this.init();
+        }
+      });
+    },
+    /** 还原操作 */
+    undo() {
+      console.log("this.currentContest", this.currentContest);
+      this.checkList = [];
+      this.currentContest = null;
+      this.currentContest = this.adjudicatorList[this.currenIndex];
+      this.currentContest.candidateDataList.filter((i) => {
+        if (i.status == "Approve") this.checkList.push(i.id);
+      });
+      console.log("this.checkList", this.checkList);
+    },
+    /** 保存验证操作 */
+    toSave() {
+      //判断勾选数量  n个只能选小于n个
+      if (this.currentContest.numberOfCandidates < this.checkList.length) {
+        this.currentContest.numberOfCandidates == 1
+          ? this.$message.error(`Maximum of 1 candidate`)
+          : this.$message.error(
+              `Maximum of ${this.currentContest.numberOfCandidates} candidates`
+            );
+        return;
+      }
+      let data = {
+        dutiesId: this.currentContest.id,
+        candidateDataId: this.checkList,
+      };
+      saveContest(data).then((res) => {
+        console.log("res", res);
+        if (res.code == "200") {
+          //重新获取数据
+          this.init();
+        }
+      });
+    },
+    /** 提交选票操作 */
+    toSubmit() {
+      let data = {
+        id: this.info.id,
+      };
+      saveBallot(data).then((res) => {
+        console.log("res", res);
+        if (res.code == "200") {
+          //先清空canvas
+          // this.myCanvas.delete("all");
+          // this.myCanvas = null;
+          this.myCanvas.clearRect(0, 0, this.pixelWidth, this.pixelHeight);
+          this.myCanvas.width = this.myCanvas.width;
+          this.myCanvas.height = this.myCanvas.height;
+          this.init();
+        }
+      });
+    },
+
+    nextBallot() {
+      let data = {
+        id: this.info.id,
+      };
+      suspendBallot(data).then((res) => {
+        console.log("res", res);
+        if (res.code == "200") {
+          //先清空canvas
+          // this.myCanvas.clearRect(0, 0, this.pixelWidth, this.pixelHeight);
+          this.init();
+        }
+      });
+    },
   },
   created() {},
   async mounted() {
-    //获取选票的实际像素尺寸
-    await this.getInfo();
-    this.pixelWidth = this.info.maxWidth;
-    this.pixelHeight = this.info.maxHeight;
-    //右下区域数据
-    this.duties = this.info.duties;
-    //右上区域数据
-    this.adjudicatorList = this.info.duties.filter((i) => {
-      return i.status == "invalid";
-    });
-    console.log(this.adjudicatorList);
-    if (this.adjudicatorList.length > 0) {
-      this.currentContest = this.adjudicatorList[0];
-      this.currenIndex = 0;
-    }
-    console.log("this.currentContest", this.currentContest);
-    console.log("this.currenIndex", this.currenIndex);
-    //获取红框的坐标尺寸
-    this.adjudicatorList.map((i) => {
-      this.redBlocks.push({
-        x: i.x,
-        y: i.y,
-        width: i.width,
-        height: i.height,
-      });
-    });
-    console.log(this.redBlocks);
-
-    //给图片地址赋值
-    this.imgUrl = `http://36.41.69.47:8899/prod-api/profile/upload${this.info.imgUrl}`;
-    console.log("this.imgUrl", this.imgUrl);
-    this.$nextTick(function () {
-      //获取绘图相关DOM及canvas对象
-      this.canvasDom = document.getElementById("myCanvas");
-      this.ballotCaseDom = document.getElementById("ballotCase");
-      this.myImgDom = document.getElementById("myImg");
-      this.myCanvas = this.canvasDom.getContext("2d");
-      //获取图片视高
-      this.showHeight = this.ballotCaseDom.scrollHeight;
-      //绘图
-      this.drawImage();
-    });
+    this.init();
   },
 };
 </script>
@@ -355,11 +513,6 @@ export default {
         height: calc(100% - 80px);
         width: 100%;
         border: 2px #d4d4d7 solid;
-        // padding: 10px;
-        // img {
-        //   height: 100%;
-        //   text-align: center;
-        // }
         .my-canvas {
           // height: 100%;
           display: block;
@@ -421,6 +574,14 @@ export default {
             line-height: 40px;
             padding-left: 20px;
           }
+        }
+        .no-contest {
+          padding-top: 20px;
+          font-size: 24px;
+          line-height: 30px;
+        }
+        .valid {
+          font-size: 28px;
         }
         .contest-bottom {
           height: 60px;

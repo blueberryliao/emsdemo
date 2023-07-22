@@ -99,7 +99,7 @@
         >
         </el-table-column>
         <el-table-column
-          prop="male"
+          prop="registeretedVoters"
           label="Registereted Voters"
           min-width="12%"
           align="center"
@@ -107,7 +107,7 @@
         >
         </el-table-column>
         <el-table-column
-          prop="female"
+          prop="receivedBallots"
           label="Received Ballots"
           align="center"
           min-width="10%"

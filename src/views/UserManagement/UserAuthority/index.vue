@@ -10,13 +10,12 @@
             v-for="item in systemUserRoles"
             :key="item.roleName"
             default-active="Regular User"
+            ref="sysMenu"
           >
-            <!-- <el-submenu> -->
             <el-menu-item :index="item.roleName" @click="clickUser(item)">
               <i class="el-icon-user"></i>
               <span>{{ item.roleName }}</span>
             </el-menu-item>
-            <!-- </el-submenu> -->
           </el-menu>
         </el-card>
       </div>
@@ -168,6 +167,9 @@ export default {
       this.isMenuIndeterminate = false;
     },
     handleCheckedMenusChange(value) {
+      // let checkedCount = value.length;
+      //   this.checkAll = checkedCount === this.cities.length;
+      //   this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length;
       console.log("value", value);
       this.checkedMenus = value;
       let checkedCount = value.length;
@@ -189,6 +191,8 @@ export default {
     clickUser(item) {
       console.log("item", item);
       this.currentSystemUserRole = item;
+      //取消其他的选中态
+      this.$refs.sysMenu.activeIndex = null;
       console.log("roldId", this.currentSystemUserRole.roleId);
       //获取系统用户权限
       getAuthority(this.currentSystemUserRole.roleId).then((res) => {

@@ -172,7 +172,7 @@
 <script>
 import { getGeographyList } from "@/api/geography.js";
 import { getRoleList, addUser } from "@/api/user";
-import { handleTree } from "@/utils/ruoyi";
+import { handleTree } from "@/utils/custom";
 
 export default {
   data() {

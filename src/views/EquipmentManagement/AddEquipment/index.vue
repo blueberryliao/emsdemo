@@ -299,7 +299,7 @@
 <script>
 import { getGeographyList } from "@/api/geography.js";
 import { getUserList, getRoleList } from "@/api/user";
-import { handleTree } from "@/utils/ruoyi";
+import { handleTree } from "@/utils/custom";
 import { addEquipment, editEquipment } from "@/api/equipment.js";
 
 export default {

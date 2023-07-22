@@ -153,7 +153,7 @@
           <el-table-column
             prop="status"
             label="Status"
-            width="80px"
+            width="100px"
             align="center"
           >
             <!-- <template slot-scope="scope">
@@ -309,7 +309,7 @@
 import Pagination from "@/components/Pagination/index.vue";
 import { getGeographyList } from "@/api/geography.js";
 import { getVoterList, deleteVoter } from "@/api/voter.js";
-import { handleTree } from "@/utils/ruoyi";
+import { handleTree } from "@/utils/custom";
 
 export default {
   components: { Pagination },
