@@ -32,7 +32,12 @@
 
 				<div class="search-unit">
 					<div class="search-title">Jurisdiction</div>
-					<el-select
+					<el-cascader
+						v-model="jurisdictionValue"
+						:options="JurisdictionOptions"
+						@change="handleQuery"
+					></el-cascader>
+					<!-- <el-select
 						v-model="authority"
 						filterable
 						size="small"
@@ -45,7 +50,7 @@
 							:key="item.value"
 							:label="item.label"
 							:value="item.value"
-						>
+						> -->
 						</el-option>
 					</el-select>
 				</div>
@@ -185,11 +190,15 @@
 <script>
 import { getDataCentreVoters } from '@/api/ballot';
 import Pagination from '@/components/Pagination/index.vue';
-
+import { getGeographyList } from "@/api/geography.js";
 export default {
 	components: { Pagination },
 	data() {
 		return {
+      jurisdictionValue:'',
+      JurisdictionOptions:[],
+      // props:{value:,label:,children:'children'},
+      treeData:[],
 			date1: '',
 			userName: '',
 			fullName: '',
@@ -249,6 +258,31 @@ export default {
 				}
 			});
 		},
+    getGeographyList() {
+      getGeographyList().then((res) => {
+        console.log("res", res);
+        if (res.code == 200) {
+          this.geographyList = res.data;
+          this.treeData = handleTree(res.data);
+          this.treeData.forEach(node=>{
+            this.getOps(node)
+          })
+          console.log("tree", this.treeData);
+        }
+      });
+    },
+    getOps(node){
+      node.label= `${node.districtName},${node.idNumber}`
+      node.value=`${node.districtName},${node.idNumber}`
+      if (node.children){
+        node.children.forEach(i=>{
+          getOps(i)
+        })
+
+      }
+      
+      
+    },
 		/** 搜索按钮操作 */
 		handleQuery() {
 			clearTimeout(this.timer);
@@ -341,6 +375,7 @@ export default {
 	},
 	created() {
 		this.getDataCentreVoters();
+    this.getGeographyList()
 		// this.getRoleList();
 	},
 	mounted() {
