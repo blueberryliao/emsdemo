@@ -6,7 +6,22 @@
 			<div class="search-left">
 				<div class="search-unit">
 					<div class="search-title">Status</div>
-					<el-input
+          <el-select
+          v-model="status"
+          size="small"
+          class="search-item"
+          clearable
+          @change="handleQuery"
+        >
+          <el-option
+            v-for="item in statusOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+					<!-- <el-input
 						v-model="userName"
 						size="small"
 						suffix-icon="el-icon-search"
@@ -14,7 +29,7 @@
 						clearable
 						@input="handleQuery"
 					>
-					</el-input>
+					</el-input> -->
 				</div>
 				<div class="search-unit">
 					<div class="search-title">Recording Time</div>
@@ -26,6 +41,7 @@
 						end-placeholder="Ending Date"
 						data-format="yyyy-MM-dd"
 						value-format="yyyy-MM-dd"
+            @change="handleQuery"
 					>
 					</el-date-picker>
 				</div>
@@ -57,7 +73,7 @@
 				<div class="search-unit">
 					<div class="search-title">Age group</div>
 					<el-select
-						v-model="authority"
+						v-model="ageGroup"
 						filterable
 						size="small"
 						class="search-item"
@@ -65,7 +81,7 @@
 						@change="handleQuery"
 					>
 						<el-option
-							v-for="item in authorityOptions"
+							v-for="item in ageGroupOptions"
 							:key="item.value"
 							:label="item.label"
 							:value="item.value"
@@ -191,31 +207,35 @@
 import { getDataCentreVoters } from '@/api/ballot';
 import Pagination from '@/components/Pagination/index.vue';
 import { getGeographyList } from "@/api/geography.js";
+import { handleTree } from "@/utils/custom";
 export default {
 	components: { Pagination },
 	data() {
 		return {
-      jurisdictionValue:'',
+      jurisdictionValue:[],
       JurisdictionOptions:[],
       // props:{value:,label:,children:'children'},
       treeData:[],
 			date1: '',
+      startingDate:'',
+      deadline:'',
 			userName: '',
 			fullName: '',
-			type: '',
-			typeOptions: [
+			status: '',
+			statusOptions: [
 				{ label: 'all', value: '' },
 				{
-					label: 'System User',
-					value: 1
+					label: 'Registered',
+					value: 'Registered'
 				},
-				{
-					label: 'Equipment User',
-					value: 2
-				}
+        {
+					label: 'Verified',
+					value: 'Verified'
+				},
 			],
-			authority: '',
-			authorityOptions: [{ label: 'all', value: '' }],
+			ageGroup: '',
+			ageGroupOptions: [{ label: 'all', value: '' },{label: '50-60', value: '50-60' },{label: '40-50', value: '40-50' },
+    ],
 			tableData: [],
 			loading: false,
 			checkBoxList: [],
@@ -237,11 +257,11 @@ export default {
 		getDataCentreVoters() {
 			this.loading = true;
 			let query = {
-				status: '',
-				startingDate: '',
-				deadline: '',
-				jurisdiction: '',
-				ageGroup: ''
+				status: this.status,
+				startingDate: this.startingDate,
+				deadline: this.deadline,
+				jurisdiction: this.jurisdictionValue.length>0?this.jurisdictionValue[this.jurisdictionValue.length-1]:'',
+				ageGroup: this.ageGroup
 			};
 			getDataCentreVoters(query).then((res) => {
 				if (res.code == 200) {
@@ -268,6 +288,7 @@ export default {
             this.getOps(node)
           })
           console.log("tree", this.treeData);
+          this.JurisdictionOptions=this.treeData
         }
       });
     },
@@ -276,7 +297,7 @@ export default {
       node.value=`${node.districtName},${node.idNumber}`
       if (node.children){
         node.children.forEach(i=>{
-          getOps(i)
+          this.getOps(i)
         })
 
       }
@@ -285,9 +306,16 @@ export default {
     },
 		/** 搜索按钮操作 */
 		handleQuery() {
+      // console.log(this.jurisdictionValue)
+      console.log(this.date1)
+      let arr=[...this.date1]
+      console.log(this.arr[0])
+      console.log(this.arr[1])
+      this.startingDate=this.data1[0]
+      this.deadline=this.data1[1]
 			clearTimeout(this.timer);
 			this.timer = setTimeout(() => {
-				this.pageNum = 1;
+				// this.pageNum = 1;
 				this.getDataCentreVoters();
 			}, 300);
 		},
