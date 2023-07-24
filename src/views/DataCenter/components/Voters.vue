@@ -171,14 +171,14 @@
 				</el-table-column>
 			</el-table>
 		</div>
-		<div class="page">
+		<!-- <div class="page">
 			<Pagination
 				:total="total"
 				:page.sync="pageNum"
 				:limit.sync="pageSize"
 				@pagination="getDataCentreVoters"
 			></Pagination>
-		</div>
+		</div> -->
 	</div>
 </template>
 

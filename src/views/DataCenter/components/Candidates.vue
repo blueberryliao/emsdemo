@@ -53,14 +53,14 @@
 				</el-table-column>
 			</el-table>
 		</div>
-		<div class="page">
+		<!-- <div class="page">
 			<Pagination
 				:total="total"
 				:page.sync="pageNum"
 				:limit.sync="pageSize"
 				@pagination="getDataCentreCandidates"
 			></Pagination>
-		</div>
+		</div> -->
 	</div>
 </template>
 
@@ -114,14 +114,8 @@ export default {
 			getDataCentreCandidates().then((res) => {
 				if (res.code == 200) {
 					console.log('res.rows', res);
-					// res.rows.map((row) => {
-					// 	row.roleName = '';
-					// 	row.roles.forEach((role) => {
-					// 		row.roleName += role.roleName + ' ';
-					// 	});
-					// });
 					this.tableData = res.data;
-					this.total = res.total;
+					// this.total = res.total;
 					this.loading = false;
 				}
 			});

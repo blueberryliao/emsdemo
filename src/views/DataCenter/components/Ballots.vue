@@ -161,14 +161,14 @@
 				</el-table-column>
 			</el-table>
 		</div>
-		<div class="page">
+		<!-- <div class="page">
 			<Pagination
 				:total="total"
 				:page.sync="pageNum"
 				:limit.sync="pageSize"
 				@pagination="getDataCentreBallots"
 			></Pagination>
-		</div>
+		</div> -->
 	</div>
 </template>
 
@@ -223,7 +223,7 @@ export default {
 				if (res.code == 200) {
 					console.log('res.rows', res.rows);
 					this.tableData = res.rows;
-					this.total = res.total;
+					// this.total = res.total;
 					this.loading = false;
 				}
 			});
