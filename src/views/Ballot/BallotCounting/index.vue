@@ -163,7 +163,7 @@
 </template>
 
 <script>
-import imgUrl from "@/assets/img/ballot.jpg";
+// import imgUrl from "@/assets/img/ballot.jpg";
 import {
   getBallotInfo,
   saveBallot,
@@ -254,7 +254,7 @@ export default {
       this.duties = this.info.duties;
       //右上区域数据
       this.adjudicatorList = this.info.duties.filter((i) => {
-        return i.status !== "valid" || i.status !== "Valid";
+        return i.status !== "valid" && i.status !== "Valid";
       });
       console.log(this.adjudicatorList);
       if (this.adjudicatorList.length > 0) {
@@ -407,11 +407,12 @@ export default {
       //判断勾选数量  n个只能选小于n个
       if (this.currentContest.numberOfCandidates < this.checkList.length) {
         this.currentContest.numberOfCandidates == 1
-          ? this.$message.error(`Maximum of 1 candidate`)
+          ? this.$message.error(
+              `Maximum of 1 candidate, are you sure to submit?`
+            )
           : this.$message.error(
-              `Maximum of ${this.currentContest.numberOfCandidates} candidates`
+              `Maximum of ${this.currentContest.numberOfCandidates} candidates, are you sure to submit?`
             );
-        return;
       }
       let data = {
         dutiesId: this.currentContest.id,
