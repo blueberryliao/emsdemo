@@ -36,6 +36,7 @@
           filterable
           size="small"
           class="search-item"
+          placeholder="All"
           clearable
           @change="handleQuery"
         >
@@ -55,6 +56,7 @@
           filterable
           size="small"
           class="search-item"
+          placeholder="All"
           clearable
           @change="handleQuery"
         >
@@ -231,10 +233,12 @@ export default {
       //     value: "MPVD",
       //   },
       // ],
-      deviceTypeOptions: [{ label: "All", value: "" }],
+      deviceTypeOptions: [
+        // { label: "All", value: "" }
+      ],
       use: "",
       useOptions: [
-        { label: "All", value: "" },
+        // { label: "All", value: "" },
         {
           label: "Registration",
           value: "Registration",

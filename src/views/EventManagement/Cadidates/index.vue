@@ -33,6 +33,7 @@
           size="small"
           class="search-item"
           clearable
+          placeholder="All"
           @change="handleQuery"
         >
           <el-option
@@ -52,6 +53,7 @@
           size="small"
           class="search-item"
           clearable
+          placeholder="All"
           @change="handleQuery"
         >
           <el-option
@@ -213,7 +215,7 @@ export default {
     return {
       position: "",
       positionOptions: [
-        { label: "all", value: "" },
+        // { label: "All", value: "" },
         {
           label: "President",
           value: "President",
@@ -241,7 +243,7 @@ export default {
       ],
       party: "",
       partyOptions: [
-        { label: "all", value: "" },
+        // { label: "All", value: "" },
         { label: "Democratic Party", value: "Democratic Party" },
         { label: "Republican Party", value: "Republican Party" },
         { label: "Non-Partisan", value: "Non-Partisan" },

@@ -45,6 +45,7 @@
           size="small"
           class="search-item"
           clearable
+          placeholder="All"
           @change="handleQuery"
         >
           <el-option
@@ -166,7 +167,7 @@ export default {
       contestName: "",
       contestType: "",
       typeOptions: [
-        { label: "all", value: "" },
+        // { label: "All", value: "" },
         {
           label: "Candidate",
           value: "candidate",
@@ -177,7 +178,7 @@ export default {
         },
       ],
       authority: "",
-      authorityOptions: [{ label: "all", value: "" }],
+      authorityOptions: [{ label: "ll", value: "" }],
       tableData: [],
       treeProps: { children: "children", hasChildren: "hasChildren" },
       loading: false,

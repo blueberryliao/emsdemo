@@ -1,7 +1,7 @@
 <template>
   <div class="menu">
     <el-menu
-      default-active="/ElectionConfiguration/ElectionEvents"
+      :default-active="this.$route.path"
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose"

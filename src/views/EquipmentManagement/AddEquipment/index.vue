@@ -164,7 +164,7 @@
         </div>
         <div class="bottom">
           <div class="title-box">
-            <div class="title">Fucntionalities Configuration</div>
+            <div class="title">Functionalities Configuration</div>
             <div class="op"></div>
           </div>
           <div class="extra-info">
@@ -264,7 +264,7 @@
               </el-col>
             </el-row>
             <el-row class="row"
-              >Ballot recognition threshld
+              >Ballot recognition threshold
               <!-- <span class="empty-block">**</span> % -->
               <input class="empty-block" v-model="input3" />%
             </el-row>

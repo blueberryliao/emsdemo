@@ -122,7 +122,7 @@ export default {
       fullName: "",
       type: "",
       typeOptions: [
-        { label: "all", value: "" },
+        { label: "ll", value: "" },
         {
           label: "System User",
           value: 1,
@@ -133,7 +133,9 @@ export default {
         },
       ],
       authority: "",
-      authorityOptions: [{ label: "all", value: "" }],
+      authorityOptions: [
+        // { label: "All", value: "" }
+      ],
       tableData: [],
       treeProps: { children: "children", hasChildren: "hasChildren" },
       loading: false,

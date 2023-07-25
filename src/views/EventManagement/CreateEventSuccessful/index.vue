@@ -27,7 +27,7 @@
     <div class="event-type">
       <div class="title">1 Activated Event</div>
       <div class="event-case">
-        <div class="event-title">Sample Election</div>
+        <div class="event-title">2023 INTEGELEC Election</div>
         <div class="event-content">
           <div class="status">
             <i class="el-icon-success success"></i>

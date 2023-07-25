@@ -260,9 +260,13 @@ export default {
       userName: "",
       fullName: "",
       type: "",
-      typeOptions: [{ label: "all", value: "" }],
+      typeOptions: [
+        // { label: "All", value: "" }
+      ],
       authority: "",
-      authorityOptions: [{ label: "all", value: "" }],
+      authorityOptions: [
+        // { label: "All", value: "" }
+      ],
       tableData: [],
       loading: false,
       checkBoxList: [],

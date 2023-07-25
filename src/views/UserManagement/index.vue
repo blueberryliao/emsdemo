@@ -62,6 +62,7 @@
           size="small"
           class="search-item"
           clearable
+          placeholder="All"
           @change="handleQuery"
         >
           <el-option
@@ -81,6 +82,7 @@
           size="small"
           class="search-item"
           clearable
+          placeholder="All"
           @change="handleQuery"
         >
           <el-option
@@ -276,7 +278,7 @@ export default {
       fullName: "",
       type: "",
       typeOptions: [
-        { label: "All", value: "" },
+        // { label: "All", value: "" },
         {
           label: "System User",
           value: 1,
@@ -287,7 +289,9 @@ export default {
         },
       ],
       authority: "",
-      authorityOptions: [{ label: "All", value: "" }],
+      authorityOptions: [
+        // { label: "All", value: "" }
+      ],
       tableData: [],
       loading: false,
       checkBoxList: [],
@@ -305,7 +309,7 @@ export default {
     //观察
     type: {
       handler(nv) {
-        this.authorityOptions = [{ label: "All", value: "" }];
+        this.authorityOptions = [];
         this.authority = "";
         if (nv == 1) {
           this.systemUserAuthorityList.map((item) => {
