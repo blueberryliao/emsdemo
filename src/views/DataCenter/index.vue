@@ -4,19 +4,19 @@
       <el-tabs v-model="activeName" @tab-click="handleClick" class="el-tab">
         <el-tab-pane name="first" class="tab-pane">
           <span slot="label"><i class="el-icon-user"></i> Voters</span>
-          <Voters></Voters>
+          <Voters :toRender="toRenderVoters"></Voters>
         </el-tab-pane>
         <el-tab-pane name="second" class="tab-pane">
           <span slot="label"><i class="el-icon-s-ticket"></i> Ballots</span>
-          <Ballots></Ballots>
+          <Ballots :toRender="toRenderBallots"></Ballots>
         </el-tab-pane>
         <el-tab-pane name="third" class="tab-pane">
           <span slot="label"><i class="el-icon-s-custom"></i> Candidates</span>
-          <Candidates></Candidates>
+          <Candidates :toRender="toRenderCandidates"></Candidates>
         </el-tab-pane>
         <el-tab-pane name="fourth" class="tab-pane">
           <span slot="label"><i class="el-icon-s-data"></i> Results</span>
-          <Results :toRender="toRender"></Results>
+          <Results :toRender="toRenderResults"></Results>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -39,31 +39,19 @@ export default {
   data() {
     return {
       activeName: "fourth",
-      toRender: 0, //触发Result页面的echarts更新
+      toRenderVoters: 0,
+      toRenderBallots: 0,
+      toRenderCandidates: 0,
+      toRenderResults: 0, //触发Result页面的echarts更新
     };
   },
-  //   computed: {
-  //     //计算属性
-  //     example: "",
-  //     mainTabs: {
-  //       get() {
-  //         return this.$store.state.common.mainTabs;
-  //       },
-  //       set(val) {
-  //         this.$store.commit("common/updateMainTabs", val);
-  //       },
-  //     },
-  //   },
-  //   watch: {
-  //     //观察
-  //     $route: "routeHandle",
-  //     keywordSearch: {
-  //       handler(nv) {},
-  //     },
-  //   },
+
   methods: {
     handleClick() {
-      if (this.activeName == "fourth") this.toRender++;
+      if (this.activeName == "first") this.toRenderVoters++;
+      if (this.activeName == "second") this.toRenderBallots++;
+      if (this.activeName == "third") this.toRenderCandidates++;
+      if (this.activeName == "fourth") this.toRenderResults++;
     },
   },
   created() {},

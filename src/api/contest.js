@@ -17,3 +17,12 @@ export const getCandidateList = (query) => {
     params: query,
   });
 };
+
+//职位列表
+export const getPositionList = (query) => {
+  return request({
+    url: "/candidate/candidate/getElectivePosition",
+    method: "get",
+    params: query,
+  });
+};

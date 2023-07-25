@@ -167,6 +167,11 @@ import { getGeographyList } from "@/api/geography.js";
 import { handleTree } from "@/utils/custom";
 export default {
   components: { Pagination },
+  props: {
+    toRender: {
+      default: false,
+    },
+  },
   data() {
     return {
       level: "",
@@ -241,6 +246,10 @@ export default {
   //   },
   watch: {
     //观察
+    toRender(newV) {
+      console.log("newV", newV);
+      this.getDataCentreBallots();
+    },
   },
   methods: {
     getDataCentreBallots() {

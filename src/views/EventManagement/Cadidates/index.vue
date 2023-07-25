@@ -204,7 +204,7 @@
 
 <script>
 import Pagination from "@/components/Pagination/index.vue";
-import { getCandidateList } from "@/api/contest.js";
+import { getCandidateList, getPositionList } from "@/api/contest.js";
 export default {
   components: { Pagination },
   //   components: {
@@ -216,30 +216,30 @@ export default {
       position: "",
       positionOptions: [
         // { label: "All", value: "" },
-        {
-          label: "President",
-          value: "President",
-        },
-        {
-          label: "Vice-President",
-          value: "Vice-President",
-        },
-        {
-          label: "Party List",
-          value: "Party List",
-        },
-        {
-          label: "Senator",
-          value: "Senator",
-        },
-        {
-          label: "Mayor",
-          value: "Mayor",
-        },
-        {
-          label: "Vice Mayor",
-          value: "Vice Mayor",
-        },
+        // {
+        //   label: "President",
+        //   value: "President",
+        // },
+        // {
+        //   label: "Vice-President",
+        //   value: "Vice-President",
+        // },
+        // {
+        //   label: "Party List",
+        //   value: "Party List",
+        // },
+        // {
+        //   label: "Senator",
+        //   value: "Senator",
+        // },
+        // {
+        //   label: "Mayor",
+        //   value: "Mayor",
+        // },
+        // {
+        //   label: "Vice Mayor",
+        //   value: "Vice Mayor",
+        // },
       ],
       party: "",
       partyOptions: [
@@ -280,6 +280,21 @@ export default {
         }
       });
     },
+    getPositionList() {
+      getPositionList().then((res) => {
+        console.log("res", res);
+        if (res.code == 200) {
+          res.data.forEach((element) => {
+            let obj = {
+              value: element,
+              label: element,
+            };
+            this.positionOptions.push(obj);
+          });
+        }
+      });
+    },
+
     /** 搜索按钮操作 */
     handleQuery() {
       clearTimeout(this.timer);
@@ -317,6 +332,7 @@ export default {
   },
   created() {
     this.getCandidateList();
+    this.getPositionList();
   },
   mounted() {
     this.$nextTick(function () {

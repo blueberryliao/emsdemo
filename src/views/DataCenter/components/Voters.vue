@@ -193,6 +193,11 @@ import { getGeographyList } from "@/api/geography.js";
 import { handleTree } from "@/utils/custom";
 export default {
   components: { Pagination },
+  props: {
+    toRender: {
+      default: false,
+    },
+  },
   data() {
     return {
       jurisdictionValue: [],
@@ -239,6 +244,10 @@ export default {
   //   },
   watch: {
     //观察
+    toRender(newV) {
+      console.log("newV", newV);
+      this.getDataCentreVoters();
+    },
   },
   methods: {
     getDataCentreVoters() {
@@ -256,12 +265,6 @@ export default {
       getDataCentreVoters(query).then((res) => {
         if (res.code == 200) {
           console.log("res.rows", res);
-          // res.rows.map((row) => {
-          // 	row.roleName = '';
-          // 	row.roles.forEach((role) => {
-          // 		row.roleName += role.roleName + ' ';
-          // 	});
-          // });
           this.tableData = res.data;
           // this.total = res.total;
           this.loading = false;
